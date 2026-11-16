@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ORT 4단계">
+<meta name="theme-color" content="#1f6f5c">
+<meta name="description" content="Oxford Reading Tree Stage 4 — 30권 읽기 가이드, 핵심 단어장, 단어 퀴즈, 문장 따라 말하기">
+<title>ORT 4단계 읽기 노트</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%231f6f5c'/%3E%3Ctext x='32' y='45' font-size='34' font-family='Helvetica,Arial' font-weight='bold' text-anchor='middle' fill='%23f6f1e4'%3E4%3C/text%3E%3C/svg%3E">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#f5f1e8; --card:#fffdf9; --ink:#221f1a; --muted:#7c7568; --line:#e6ded0;
+  --green:#1f6f5c; --green-dark:#155445; --green-soft:#e7f1ec;
+  --amber:#d98b2b; --red:#c2503f; --blue:#2b6390; --blue-soft:#e6eff6;
+  --r:16px;
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Malgun Gothic","Segoe UI",Roboto,sans-serif;
+  line-height:1.6; letter-spacing:-0.01em; padding-bottom:calc(78px + env(safe-area-inset-bottom));
+  -webkit-tap-highlight-color:transparent;
+}
+[hidden]{display:none !important}
+button{font-family:inherit}
+h1,h2,h3,p,ul,ol{margin:0}
+.wrap{max-width:760px;margin:0 auto}
+
+/* ---------- hero ---------- */
+.hero{
+  background:linear-gradient(158deg,#25795f 0%,#1d6753 45%,#134a3d 100%);
+  color:#f7f2e6; padding:calc(16px + env(safe-area-inset-top)) 18px 20px;
+  border-radius:0 0 26px 26px; box-shadow:0 18px 40px -30px rgba(19,74,61,.9);
+}
+.hero-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#bcd8cc;margin-bottom:4px}
+.hero h1{font-size:22px;line-height:1.25;letter-spacing:-.02em;font-weight:800}
+.hero-sub{font-size:12.5px;color:#cfe3d9;margin-top:5px}
+.icon-btn{
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22); color:#fff;
+  width:40px;height:40px;border-radius:12px;font-size:18px;line-height:1;cursor:pointer;flex:0 0 auto;
+}
+.icon-btn:active{transform:scale(.95)}
+.prog{margin-top:16px}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:#e6f0ea}
+.prog-top b{font-size:15px;color:#ffd79a}
+.prog-bar{height:9px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden;margin-top:7px}
+.prog-bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#ffcf87,#f0a63c);transition:width .45s ease}
+.prog-note{font-size:11.5px;color:#b9d3c8;margin-top:8px}
+
+/* ---------- sticky dock ---------- */
+.dock{position:sticky;top:0;z-index:20;background:rgba(245,241,232,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:0 16px 10px}
+.dock-thin{height:3px;margin:0 -16px 9px;background:transparent}
+.dock-thin i{display:block;height:100%;width:0;background:var(--green);transition:width .4s ease}
+.dock-row{display:flex;align-items:center;gap:9px}
+.search{flex:1;display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+.search span{font-size:14px;opacity:.55}
+.search input{border:0;outline:0;background:transparent;font:inherit;font-size:14.5px;width:100%;color:var(--ink)}
+.count{font-size:12px;font-weight:700;color:var(--green);background:var(--green-soft);border-radius:99px;padding:5px 10px;white-space:nowrap}
+.chips{display:flex;gap:7px;overflow-x:auto;margin-top:9px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto;border:1px solid var(--line);background:#fff;color:#5f594e;border-radius:99px;
+  padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s;
+}
+.chip b{font-weight:700;opacity:.55;margin-left:4px;font-size:11.5px}
+.chip.on{background:var(--green);border-color:var(--green);color:#fff}
+.chip.on b{opacity:.85}
+
+/* ---------- list / cards ---------- */
+.list{padding:14px 16px 4px}
+.sec{display:flex;align-items:baseline;gap:8px;margin:22px 2px 10px}
+.sec:first-child{margin-top:4px}
+.sec h2{font-size:13.5px;font-weight:800;color:var(--green-dark);letter-spacing:0}
+.sec span{font-size:11.5px;color:var(--muted)}
+.sec-note{font-size:12px;color:var(--muted);margin:-4px 2px 10px;line-height:1.5}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:11px;
+  box-shadow:0 1px 0 rgba(34,31,26,.02),0 12px 26px -24px rgba(34,31,26,.65);overflow:hidden;transition:.18s;
+}
+.card.done{border-color:#cfe3d8;background:#f8fbf8}
+.card-head{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:start;padding:14px 14px 13px;cursor:pointer}
+.idx{
+  width:30px;height:30px;border-radius:10px;background:var(--green-soft);color:var(--green);
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex:0 0 auto;
+}
+.card.done .idx{background:var(--green);color:#fff}
+.titles h3{font-size:16.5px;line-height:1.3;font-weight:750;letter-spacing:-.02em}
+.card.done .titles h3{color:#3f6a5b}
+.ko{font-size:13px;color:var(--muted);margin-top:2px}
+.meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.meta i{font-style:normal;font-size:11px;color:#6d6659;background:#f2ece0;border-radius:7px;padding:2px 7px}
+.free{display:inline-block;background:var(--blue-soft);color:var(--blue);font-size:10.5px;font-weight:800;border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:2px;letter-spacing:0}
+.done-btn{
+  width:34px;height:34px;border-radius:50%;border:1.6px dashed #cfc6b5;background:#fff;color:#c6bda9;
+  font-size:16px;line-height:1;cursor:pointer;flex:0 0 auto;transition:.18s;
+}
+.done-btn.on{background:var(--green);border:1.6px solid var(--green);color:#fff;border-style:solid}
+.card-body{padding:0 14px 15px;border-top:1px solid #f1ebdf}
+.summary{font-size:14px;color:#4a463e;margin-top:12px;line-height:1.65}
+.block-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:16px 0 8px;font-size:12px;font-weight:800;color:#5b6a61;letter-spacing:.02em}
+.block-title .hint{font-weight:500;color:#a09a8c;font-size:11px;letter-spacing:0}
+.vocab{list-style:none;padding:0;display:grid;gap:6px}
+.v-item{background:#f8f4eb;border:1px solid #efe7d8;border-radius:11px;overflow:hidden}
+.v-btn{width:100%;display:flex;align-items:center;gap:8px;background:none;border:0;padding:9px 10px;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.v-btn b{font-size:14.5px;letter-spacing:0}
+.ipa{font-size:12px;color:#8b8474}
+.pos{font-size:10.5px;background:#e9e0cd;color:#6a6355;border-radius:6px;padding:1px 6px;font-weight:700}
+.v-btn .chev{margin-left:auto;font-size:11px;color:#b3ab99;transition:.2s}
+.v-btn.open .chev{transform:rotate(180deg)}
+.v-speak{flex:0 0 auto;border:1px solid #e0d6c3;background:#fff;border-radius:9px;width:30px;height:30px;font-size:14px;line-height:1;cursor:pointer;margin-left:2px}
+.v-speak:active{transform:scale(.93)}
+.v-more{padding:0 11px 11px;border-top:1px dashed #e6dcc9;margin-top:0}
+.v-ko{font-size:13.5px;color:#2f2b24;margin-top:8px;font-weight:600}
+.v-ex{font-size:13px;color:#6c6558;margin-top:3px;font-style:italic}
+.v-ex-btn{margin-top:8px;border:1px solid #ded4c0;background:#fffdf8;border-radius:8px;padding:5px 9px;font-size:11.5px;color:#6d6659;cursor:pointer}
+
+/* sentences */
+.sent{background:#fff;border:1px solid #eee7da;border-radius:12px;padding:11px 11px 10px;margin-bottom:7px}
+.sent-en{font-size:15px;line-height:1.5;font-weight:600;color:#26231d}
+.sent-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.mini{border:1px solid #e2d8c6;background:#fbf8f1;color:#5c5649;border-radius:9px;padding:5px 10px;font-size:11.5px;font-weight:600;cursor:pointer}
+.mini:active{transform:scale(.96)}
+.mini.ghost{background:#fff}
+.mic.rec{background:#fdecea;border-color:#f0b8b0;color:var(--red);animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.sent-fb{margin-top:10px;border-top:1px dashed #eae2d2;padding-top:10px}
+.score-row{display:flex;align-items:center;gap:9px}
+.score-big{font-size:22px;font-weight:800;color:var(--green)}
+.score-big.mid{color:var(--amber)}
+.score-big.low{color:var(--red)}
+.score-msg{font-size:12.5px;color:#6d6659}
+.said{font-size:12px;color:#8b8474;margin-top:6px;word-break:break-word}
+.mark{margin-top:8px;line-height:2;font-size:14.5px}
+.mark span{padding:2px 4px;border-radius:5px;margin-right:3px;display:inline-block}
+.mark .hit{background:#e3f3e8;color:#1c6b45;font-weight:600}
+.mark .near{background:#fdf0dc;color:#a86a12;text-decoration:underline dotted}
+.mark .miss{background:#fbe6e2;color:#b23b2c}
+.warn{font-size:12.5px;color:#8a5a2a;background:#fdf4e6;border-radius:9px;padding:9px 10px;line-height:1.5}
+.note{font-size:11.5px;color:#9a9384;margin-top:7px;line-height:1.5}
+.record-wrap{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:8px}
+.record-wrap audio{width:100%;height:34px}
+
+/* stars / memo */
+.rate-row{display:flex;align-items:center;gap:10px;margin-top:16px}
+.rate-label{font-size:12px;font-weight:800;color:#5b6a61}
+.stars{display:flex;gap:1px}
+.star{border:0;background:none;font-size:21px;line-height:1;color:#ddd4c1;padding:0 2px;cursor:pointer;transition:.15s}
+.star.on{color:#e8a33a}
+.memo{width:100%;margin-top:10px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 11px;font:inherit;font-size:13.5px;color:var(--ink);outline:none}
+.memo:focus{border-color:#bcd3c7;box-shadow:0 0 0 3px rgba(31,111,92,.08)}
+.memo-saved{font-size:11px;color:#a09a8c;margin-top:5px;height:14px}
+.idx-ico{font-size:14px;line-height:1}
+.read-toggle{
+  width:100%;margin-top:6px;border:1.5px solid #cfe0d6;background:#fff;color:var(--green);
+  border-radius:11px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;
+}
+.read-toggle.on{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ---------- info panels ---------- */
+.panels{padding:22px 16px 8px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.panel h2{font-size:14.5px;font-weight:800;margin-bottom:6px}
+.panel p{font-size:13px;color:#5d5749;line-height:1.65}
+.link-btn{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;
+  background:var(--green);color:#fff;border-radius:12px;padding:13px 15px;font-weight:700;font-size:14px;margin-top:10px;
+}
+.link-btn:active{transform:scale(.99)}
+.link-btn.alt{background:#fff;color:var(--green);border:1.5px solid var(--green)}
+.link-btn small{font-weight:500;font-size:11px;opacity:.85}
+.tip{font-size:12.5px;color:#6d6659;margin-top:10px;background:#f7f3ea;border-radius:10px;padding:10px 12px;line-height:1.6}
+.steps{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:#5d5749;line-height:1.75}
+.foot{font-size:11px;color:#9a9384;text-align:center;padding:10px 24px 26px;line-height:1.6}
+
+/* ---------- quiz ---------- */
+.view{padding:16px 16px 8px}
+.vtitle{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.vsub{font-size:13px;color:var(--muted);margin-top:3px}
+.field{margin-top:18px}
+.field > label{display:block;font-size:12px;font-weight:800;color:#5b6a61;margin-bottom:7px}
+.field .chips{margin-top:0;flex-wrap:wrap;overflow:visible}
+.select{width:100%;margin-top:9px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px 11px;font:inherit;font-size:13.5px;color:var(--ink)}
+.cta{
+  width:100%;margin-top:22px;border:0;background:var(--green);color:#fff;border-radius:13px;
+  padding:15px;font-size:15.5px;font-weight:800;cursor:pointer;box-shadow:0 10px 24px -16px rgba(31,111,92,.9);
+}
+.cta:active{transform:scale(.99)}
+.cta.alt{background:#fff;color:var(--green);border:1.5px solid var(--green);box-shadow:none}
+.cta:disabled{opacity:.45}
+.best{margin-top:14px;font-size:12.5px;color:var(--muted);text-align:center}
+
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:6px}
+.qtop{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:700}
+.qbar{height:5px;border-radius:99px;background:#eee6d6;margin-top:8px;overflow:hidden}
+.qbar i{display:block;height:100%;background:var(--green);border-radius:99px;transition:width .3s}
+.qlabel{font-size:12px;font-weight:800;color:#8b8474;margin-top:18px;letter-spacing:.02em}
+.qprompt{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap}
+.qprompt b{font-size:27px;letter-spacing:-.02em;line-height:1.25}
+.qprompt .korprompt{font-size:21px;font-weight:800;line-height:1.4}
+.qipa{font-size:12.5px;color:#8b8474;margin-top:4px}
+.opts{display:grid;gap:8px;margin-top:18px}
+.opt{
+  text-align:left;border:1.5px solid #e6ded0;background:#fff;border-radius:12px;padding:13px 14px;
+  font:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:.15s;
+}
+.opt:active{transform:scale(.995)}
+.opt.good{border-color:#2f8a5f;background:#e7f4ec;color:#1c6b45;font-weight:700}
+.opt.bad{border-color:#d78578;background:#fbeae6;color:#a93a2b}
+.opt.dim{opacity:.5}
+.qfb{margin-top:14px;border-top:1px dashed #eae2d2;padding-top:12px}
+.qfb .title{font-size:13px;font-weight:800}
+.qfb .title.ok{color:#1c6b45}
+.qfb .title.no{color:#a93a2b}
+.qfb .detail{font-size:13px;color:#5d5749;margin-top:4px}
+.qfb .ex{font-size:12.5px;color:#8b8474;font-style:italic;margin-top:3px}
+.result-hero{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 16px;text-align:center;margin-top:6px}
+.result-hero .big{font-size:40px;font-weight:800;color:var(--green);letter-spacing:-.03em}
+.result-hero p{font-size:13.5px;color:var(--muted);margin-top:4px}
+.wrong-list{margin-top:16px;display:grid;gap:7px}
+.wrong-item{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#fbf8f1;border:1px solid #eee5d5;border-radius:10px;padding:9px 11px}
+.wrong-item b{font-size:14px}
+.wrong-item span{font-size:12px;color:#7c7568;text-align:right}
+
+/* ---------- speak view ---------- */
+.voicebar{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.segs{display:flex;background:#fff;border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}
+.segs button{border:0;background:none;border-radius:8px;padding:6px 10px;font-size:11.5px;font-weight:700;color:#7c7568;cursor:pointer;white-space:nowrap}
+.segs button.on{background:var(--green);color:#fff}
+.cap{margin-top:12px;font-size:11.5px;color:#9a9384;line-height:1.55}
+
+/* ---------- tabbar ---------- */
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;
+  background:rgba(255,253,249,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);
+}
+.tabbar button{
+  flex:1;border:0;background:none;padding:8px 0 7px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:10.5px;font-weight:700;color:#a39c8d;cursor:pointer;
+}
+.tabbar button .ti{font-size:20px;line-height:1.1;filter:grayscale(.5);opacity:.75}
+.tabbar button.on{color:var(--green)}
+.tabbar button.on .ti{filter:none;opacity:1}
+
+/* ---------- sheet / toast ---------- */
+.sheet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.sheet-bg{position:absolute;inset:0;background:rgba(24,22,18,.42)}
+.sheet-in{
+  position:relative;width:100%;max-width:760px;background:var(--bg);border-radius:22px 22px 0 0;
+  padding:18px 18px calc(22px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;
+  animation:up .22s ease;
+}
+@keyframes up{from{transform:translateY(18px);opacity:.6}to{transform:none;opacity:1}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sheet-head h2{font-size:17px;font-weight:800}
+.close{border:0;background:#ece5d6;width:32px;height:32px;border-radius:50%;font-size:15px;cursor:pointer;color:#5b5648}
+.sheet-sec{margin-top:18px}
+.sheet-sec > label{display:block;font-size:12px;font-weight:800;color:#5b6a61;margin-bottom:7px}
+.cap-line{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:#5d5749;padding:8px 0;border-bottom:1px solid #ece4d5}
+.cap-line b{font-weight:700}
+.danger{width:100%;margin-top:10px;border:1.5px solid #e2b6ac;background:#fff;color:#a93a2b;border-radius:12px;padding:12px;font-size:13.5px;font-weight:700;cursor:pointer}
+.toast{
+  position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,16px);
+  background:#26231d;color:#fff;font-size:13px;padding:11px 16px;border-radius:99px;z-index:80;
+  opacity:0;pointer-events:none;transition:.22s;max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+#selftest{position:fixed;left:0;top:0;right:0;max-height:60vh;overflow:auto;background:#fff;color:#111;font:11px/1.4 monospace;padding:10px;z-index:999;border-bottom:2px solid #333;white-space:pre-wrap}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13.5px}
+</style>
+</head>
+<body>
+<pre id="selftest" hidden></pre>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-row">
+      <div>
+        <p class="eyebrow">Oxford Reading Tree · Stage 4</p>
+        <h1>ORT 4단계 읽기 노트</h1>
+        <p class="hero-sub">Biff, Chip &amp; Kipper 30권 + 무료 eBook 8권</p>
+      </div>
+      <button class="icon-btn" id="btnSettings" aria-label="설정">⚙️</button>
+    </div>
+    <div class="prog">
+      <div class="prog-top"><span id="progText">30권 중 0권 완료</span><b id="progPct">0%</b></div>
+      <div class="prog-bar"><i id="progFill"></i></div>
+      <p class="prog-note" id="progNote">무료 eBook 8권 중 0권 읽음</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ================= LIBRARY ================= -->
+  <section class="view" id="viewLibrary" style="padding:0">
+    <div class="dock">
+      <div class="dock-thin"><i id="miniFill"></i></div>
+      <div class="dock-row">
+        <label class="search"><span>🔍</span><input id="q" type="search" placeholder="제목·단어 검색 (scar, 목도리)" autocomplete="off"></label>
+        <span class="count" id="countPill">30</span>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div id="list" class="list"></div>
+
+    <div class="panels">
+      <div class="panel">
+        <h2>📖 무료로 읽기 — Oxford Owl</h2>
+        <p>옥스포드 대학출판부의 공식 무료 eBook 도서관이에요. 무료 회원가입 후 로그인하면 <b>Oxford Level 4</b> 도서 8권을 영국식 발음 오디오와 함께 읽을 수 있어요.</p>
+        <a class="link-btn" href="https://www.oxfordowl.co.uk/for-home/library-page?series=Oxford+Reading+Tree&amp;view=details" target="_blank" rel="noopener">
+          <span>Oxford Owl eBook 도서관 열기<br><small>oxfordowl.co.uk</small></span><span>↗</span>
+        </a>
+        <p class="tip">💡 도서관에 들어가면 <b>레벨 필터에서 Oxford Level 4</b>(Book Band 4: Blue)를 고르면 4단계 책만 볼 수 있어요. 카드에 <b>무료 eBook</b> 배지가 붙은 책이 여기서 바로 읽히는 책이에요.</p>
+      </div>
+
+      <div class="panel">
+        <h2>🎧 전권 듣기 — 리딩앤</h2>
+        <p>4단계 전권을 미국·영국 발음 오디오와 함께 읽고 싶다면 리딩앤(유료 구독)에서 ORT 1+~9단계 전체를 볼 수 있어요.</p>
+        <a class="link-btn alt" href="https://www.readingn.com/product/ort" target="_blank" rel="noopener">
+          <span>리딩앤 ORT 페이지 열기<br><small>readingn.com</small></span><span>↗</span>
+        </a>
+      </div>
+
+      <div class="panel">
+        <h2>📱 홈 화면에 추가하기</h2>
+        <p>아이폰 사파리에서 이 파일을 연 뒤:</p>
+        <ol class="steps">
+          <li>화면 아래 <b>공유</b> 버튼(□↑)을 누릅니다.</li>
+          <li>목록에서 <b>홈 화면에 추가</b>를 선택합니다.</li>
+          <li>이름을 확인하고 <b>추가</b>를 누르면 앱처럼 실행돼요.</li>
+        </ol>
+        <p class="tip">이 파일은 인터넷 없이도 열려요. 읽음 기록·별점·메모는 이 기기 브라우저에만 저장되고 서버로 보내지 않아요.</p>
+      </div>
+
+      <div class="panel">
+        <h2>🧭 이렇게 활용해 보세요</h2>
+        <ol class="steps">
+          <li><b>Warm up</b> — 퀴즈 탭에서 오늘 읽을 책의 단어를 먼저 맞혀 봐요.</li>
+          <li><b>Read</b> — 카드의 줄거리를 보고 실제 책(또는 Oxford Owl eBook)을 소리 내어 읽어요.</li>
+          <li><b>Speak Up</b> — 카드 안 문장을 듣고 따라 말해 발음을 확인해요.</li>
+          <li><b>Wrap up</b> — 다 읽으면 ✓ 체크, 별점, 한 줄 메모를 남겨요.</li>
+        </ol>
+        <p class="tip">Stories 6권은 <b>1 → 6 순서</b>로 읽으면 이야기가 이어져요. 6권의 폭풍과 열쇠가 5단계 마법 열쇠 모험으로 연결됩니다.</p>
+      </div>
+
+      <p class="foot">줄거리 요약·핵심 단어·예문·연습 문장은 학습을 돕기 위해 직접 작성한 내용이며, 원서의 본문·삽화·음원은 포함하지 않습니다. 원문은 Oxford Owl 또는 리딩앤에서 읽어 주세요.<br>Oxford Reading Tree © Oxford University Press</p>
+    </div>
+  </section>
+
+  <!-- ================= QUIZ ================= -->
+  <section class="view" id="viewQuiz" hidden>
+    <div id="quizSetup">
+      <h2 class="vtitle">🎯 단어 퀴즈</h2>
+      <p class="vsub">책에서 만난 핵심 단어로 워밍업하고 마무리해요.</p>
+
+      <div class="field">
+        <label>범위</label>
+        <div class="chips" id="quizScope"></div>
+        <select class="select" id="quizBook"></select>
+      </div>
+      <div class="field">
+        <label>문제 수</label>
+        <div class="chips" id="quizCount"></div>
+      </div>
+      <div class="field">
+        <label>문제 방향</label>
+        <div class="chips" id="quizDir"></div>
+      </div>
+
+      <button class="cta" id="btnStartQuiz">퀴즈 시작</button>
+      <p class="hint best" id="quizPoolInfo"></p>
+    </div>
+
+    <div id="quizRun" hidden>
+      <div class="qcard" id="qcard"></div>
+    </div>
+
+    <div id="quizResult" hidden></div>
+  </section>
+
+  <!-- ================= SPEAK ================= -->
+  <section class="view" id="viewSpeak" hidden>
+    <h2 class="vtitle">🎤 따라 말하기</h2>
+    <p class="vsub">문장을 듣고 그대로 따라 말해 봐요. 점수와 함께 어떤 단어가 잘 들렸는지 색으로 보여 줘요.</p>
+
+    <select class="select" id="speakBook" style="margin-top:14px"></select>
+    <div class="voicebar" id="voiceBarSpeak"></div>
+    <p class="cap" id="speakCap"></p>
+    <div id="speakList" style="margin-top:14px"></div>
+    <p class="foot">🎤 마이크는 이 기기 안에서만 쓰이고, 인식된 문장은 저장되지 않아요.</p>
+  </section>
+</main>
+
+<nav class="tabbar">
+  <button data-view="library" class="on"><span class="ti">📚</span>책장</button>
+  <button data-view="quiz"><span class="ti">🎯</span>단어 퀴즈</button>
+  <button data-view="speak"><span class="ti">🎤</span>따라 말하기</button>
+</nav>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-bg" data-close="1"></div>
+  <div class="sheet-in">
+    <div class="sheet-head"><h2>⚙️ 설정</h2><button class="close" data-close="1">✕</button></div>
+
+    <div class="sheet-sec">
+      <label>원어민 발음 · 재생 속도</label>
+      <div class="voicebar" id="voiceBarSheet"></div>
+      <p class="cap">모든 🔊 버튼(단어·예문·문장)이 이 설정을 따라요. 기기에 설치된 영어 음성을 사용해요.</p>
+    </div>
+
+    <div class="sheet-sec">
+      <label>이 브라우저의 음성 기능</label>
+      <div class="cap-line"><span>문장 읽어 주기 (TTS)</span><b id="capTts">확인 중…</b></div>
+      <div class="cap-line"><span>발음 인식 (STT)</span><b id="capStt">확인 중…</b></div>
+      <div class="cap-line"><span>녹음 (MediaRecorder)</span><b id="capRec">확인 중…</b></div>
+    </div>
+
+    <div class="sheet-sec">
+      <label>학습 기록</label>
+      <p class="cap" id="capStats"></p>
+      <button class="danger" id="btnReset">읽음·별점·메모 기록 지우기</button>
+    </div>
+    <p class="foot" style="padding:12px 0 0">기록은 이 브라우저(localStorage)에만 저장됩니다. 파일을 옮기거나 브라우저 데이터를 지우면 함께 사라져요.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DATA — 30권 + 옥스포드 아울 추가 무료 5권
+   set: s1 Stories / s2 More A / s3 More B / s4 More C / dd Decode / x 추가 무료
+   v: [단어, 발음, 품사, 뜻, 예문]   q: 연습 문장
+   ============================================================ */
+var SETS = {
+  s1:{name:"Stories", note:"6권이 하나의 이야기로 이어져요. 1번부터 순서대로 읽어 보세요."},
+  s2:{name:"More Stories A", note:"윌프·윌마네 가족이 주인공인 6편이에요."},
+  s3:{name:"More Stories B", note:"나딤·아니나가 함께하는 6편이에요."},
+  s4:{name:"More Stories C", note:"이야기가 조금 더 길어지는 6편이에요."},
+  dd:{name:"Decode & Develop", note:"파닉스를 익히며 읽는 6편이에요."},
+  x:{name:"Oxford Owl 추가 무료 도서", note:"같은 Oxford Level 4로 무료로 읽을 수 있는 5권이에요. 위 30권 목록에는 포함되지 않아요."}
+};
+
+var BOOKS = [
+{id:"house-for-sale",t:"House for Sale",ko:"집을 보러 왔어요",set:"s1",order:1,w:109,p:16,f:false,
+ s:"로빈슨 가족이 팔려고 내놓은 집을 구경하러 간다. 낡은 벽지와 넓은 방, 뒷마당의 나무 위 집까지 둘러보는 사이 온 가족이 이 집을 마음에 들어 한다.",
+ v:[["wallpaper","/ˈwɔːlpeɪpə(r)/","명사","벽지","The old wallpaper is coming off the wall."],
+    ["chimney","/ˈtʃɪmni/","명사","굴뚝","Kipper looked up the chimney."],
+    ["bedroom","/ˈbedruːm/","명사","침실","There are three bedrooms upstairs."],
+    ["pull","/pʊl/","동사","당기다","Do not pull the wallpaper."],
+    ["for sale","/fə seɪl/","표현","팔려고 내놓은","There was a sign saying for sale."]],
+ q:["This house is for sale.","Kipper pulled the wallpaper in the bedroom.","Everyone liked the big house."]},
+
+{id:"the-new-house",t:"The New House",ko:"새 집",set:"s1",order:2,w:120,p:16,f:false,
+ s:"이삿날 아침, 커다란 짐차와 덩치 큰 이삿짐센터 아저씨가 도착한다. 짐이 어찌나 많은지 트럭에 싣는 것도, 새 집에 내리는 것도 큰일이다.",
+ v:[["van","/væn/","명사","짐차, 밴","A big van came to the house."],
+    ["move","/muːv/","동사","옮기다, 이사하다","We are moving to a new house today."],
+    ["heavy","/ˈhevi/","형용사","무거운","This box is very heavy."],
+    ["load","/ləʊd/","동사","싣다","They loaded the boxes into the van."],
+    ["goodbye","/ˌɡʊdˈbaɪ/","감탄","안녕","They said goodbye to Wilf and Wilma."]],
+ q:["A big van came to our house.","We are moving to a new house today.","What a lot of things we have!"]},
+
+{id:"come-in",t:"Come In!",ko:"들어와!",set:"s1",order:3,w:109,p:16,f:false,
+ s:"새 집 문에 페인트를 칠하는 아빠, 잠깐 외출한 엄마. 그 사이 윌프와 윌마를 시작으로 친구들이 하나둘 문을 두드리고, 집 안은 금세 놀이터가 된다.",
+ v:[["mess","/mes/","명사","엉망진창","What a mess the room is in!"],
+    ["biscuit","/ˈbɪskɪt/","명사","비스킷","Mum gave the children some biscuits."],
+    ["cross","/krɒs/","형용사","화가 난","Mum was cross about the mess."],
+    ["knock","/nɒk/","동사","노크하다","Someone is knocking at the door."],
+    ["television","/ˈtelɪvɪʒn/","명사","텔레비전","The children were watching television."]],
+ q:["Come in and sit down.","Lots of children came to the house.","What a mess the room is in!"]},
+
+{id:"the-secret-room",t:"The Secret Room",ko:"비밀의 방",set:"s1",order:4,w:195,p:24,f:false,
+ s:"새 집 벽지를 바꾸려고 낡은 벽지를 걷어 내던 날, 비프의 방 벽에서 숨겨진 문이 나타난다. 문 안쪽 방에는 이 집과 똑같이 생긴 작은 모형 집이 놓여 있다.",
+ v:[["secret","/ˈsiːkrət/","형용사","비밀의","They found a secret room behind the wall."],
+    ["hidden","/ˈhɪdn/","형용사","숨겨진","A hidden door was under the wallpaper."],
+    ["model","/ˈmɒdl/","명사","모형","There was a model of the house in the room."],
+    ["dust","/dʌst/","명사","먼지","The little room was covered in dust."],
+    ["dream","/driːm/","동사","꿈을 꾸다","Biff dreamed about the little house."]],
+ q:["Biff found a door under the wallpaper.","There was a model house in the secret room.","The little room was full of dust."]},
+
+{id:"the-play",t:"The Play",ko:"연극",set:"s1",order:5,w:203,p:24,f:false,
+ s:"비가 쏟아지는 날, 메이 선생님이 아이들에게 오즈의 마법사를 읽어 준다. 밖에 나가 놀 수 없게 된 아이들은 교실에서 그 이야기를 연극으로 만들어 부모님을 초대한다.",
+ v:[["play","/pleɪ/","명사","연극","The class put on a play for the parents."],
+    ["storm","/stɔːm/","명사","폭풍","There was a storm at playtime."],
+    ["scarecrow","/ˈskeəkrəʊ/","명사","허수아비","Wilf was the scarecrow in the play."],
+    ["witch","/wɪtʃ/","명사","마녀","Chip wanted to be the witch."],
+    ["costume","/ˈkɒstjuːm/","명사","의상, 옷","Wilma's mum helped make the costumes."]],
+ q:["The class put on a play.","Wilf was the scarecrow in the play.","Mum and Dad came to watch."]},
+
+{id:"the-storm",t:"The Storm",ko:"폭풍",set:"s1",order:6,w:188,p:24,f:false,
+ s:"뒷마당의 낡은 나무 위 집을 온 가족이 고치고 페인트를 칠해 멋진 아지트로 만든다. 그날 밤, 큰 폭풍이 마을을 덮친다.",
+ v:[["mend","/mend/","동사","고치다","They mended the roof of the tree house."],
+    ["roof","/ruːf/","명사","지붕","The roof was broken."],
+    ["blow","/bləʊ/","동사","불다","The wind blew all night."],
+    ["branch","/brɑːntʃ/","명사","나뭇가지","A big branch fell on the ground."],
+    ["key","/kiː/","명사","열쇠","There was a key in the box."]],
+ q:["They mended the roof of the tree house.","A big storm came at night.","The wind blew the tree down."]},
+
+{id:"nobody-got-wet",t:"Nobody Got Wet",ko:"아무도 안 젖었어",set:"s2",order:0,w:97,p:16,f:false,
+ s:"강으로 소풍을 나간 날. 배가 흔들려 아빠가 빠질 뻔하고 비까지 내리지만, 모두의 노력 덕에 아무도 젖지 않는다. 과연 집에 돌아갈 때까지 그럴까.",
+ v:[["wet","/wet/","형용사","젖은","Nobody got wet."],
+    ["picnic","/ˈpɪknɪk/","명사","소풍","We had a picnic by the river."],
+    ["boat","/bəʊt/","명사","배, 보트","Dad got a boat for the day."],
+    ["fall in","/fɔːl ɪn/","표현","빠지다","Do not let me fall in."],
+    ["push","/pʊʃ/","동사","밀다","They pushed the boat out."]],
+ q:["We had a picnic by the river.","Dad got a boat for the day.","Nobody got wet today."]},
+
+{id:"the-weather-vane",t:"The Weather Vane",ko:"풍향계",set:"s2",order:0,w:107,p:16,f:false,
+ s:"아빠가 윌프와 윌마를 공사장에 데려간다. 크레인이 들어 올린 반짝이는 닭 모양 풍향계를 두고 아이들은 멋진 사진을 찍는다.",
+ v:[["weather vane","/ˈweðə veɪn/","명사","풍향계","The weather vane shows which way the wind blows."],
+    ["crane","/kreɪn/","명사","기중기","A crane lifted the weather vane."],
+    ["building site","/ˈbɪldɪŋ saɪt/","명사","공사장","Dad took them to a building site."],
+    ["jump over","/dʒʌmp ˈəʊvə(r)/","표현","뛰어넘다","Wilf jumped over the weather vane."],
+    ["photo","/ˈfəʊtəʊ/","명사","사진","Wilf took a photo of Wilma."]],
+ q:["Dad took Wilf and Wilma to the building site.","A crane lifted the weather vane.","Wilf took a photo of Wilma."]},
+
+{id:"poor-old-mum",t:"Poor Old Mum!",ko:"불쌍한 엄마!",set:"s2",order:0,w:84,p:16,f:false,
+ s:"운동회 날, 아이들도 아빠도 트로피를 차지하려고 온 힘을 다한다. 윌프네 엄마도 지지 않으려고 달리는데, 매번 우승 문턱에서 무슨 일이 생긴다.",
+ v:[["sports day","/spɔːts deɪ/","명사","운동회","It was sports day at school."],
+    ["race","/reɪs/","명사","경주","Mum was in the last race."],
+    ["win","/wɪn/","동사","이기다","The children wanted to win."],
+    ["fall over","/fɔːl ˈəʊvə(r)/","표현","넘어지다","Mum fell over at the line."],
+    ["poor","/pɔː(r)/","형용사","불쌍한, 가엾은","Poor old Mum!"]],
+ q:["It was sports day at school.","Mum was in the last race.","Mum fell over at the line."]},
+
+{id:"the-wedding",t:"The Wedding",ko:"결혼식",set:"s2",order:0,w:197,p:24,f:false,
+ s:"윌마네 이모 조의 결혼식 준비가 시작된다. 신부 들러리를 하고 싶은 윌마는 신이 났지만, 신랑 들러리 옷을 입어야 하는 윌프는 영 마음이 내키지 않는다.",
+ v:[["wedding","/ˈwedɪŋ/","명사","결혼식","They went to a wedding."],
+    ["bride","/braɪd/","명사","신부","The bride wore a long dress."],
+    ["bridesmaid","/ˈbraɪdzmeɪd/","명사","신부 들러리","Wilma wanted to be a bridesmaid."],
+    ["pageboy","/ˈpeɪdʒbɔɪ/","명사","신랑 들러리 소년","Wilf was a pageboy."],
+    ["cake","/keɪk/","명사","케이크","Grandma made the wedding cake."]],
+ q:["Wilma's aunt Jo was getting married.","Wilma wanted to be a bridesmaid.","Everyone danced at the party."]},
+
+{id:"the-camcorder",t:"The Camcorder",ko:"캠코더",set:"s2",order:0,w:182,p:24,f:false,
+ s:"윌마네 아빠가 새 캠코더를 사서 운동회도 결혼식도 뭐든 찍어 댄다. 어느 날 나무 위 집에서 영상을 찍던 윌마의 화면에 뜻밖의 장면이 잡힌다.",
+ v:[["camcorder","/ˈkæmkɔːdə(r)/","명사","캠코더","Dad bought a new camcorder."],
+    ["record","/rɪˈkɔːd/","동사","녹화하다","Wilma recorded the party."],
+    ["thief","/θiːf/","명사","도둑","There was a thief next door."],
+    ["anniversary","/ˌænɪˈvɜːsəri/","명사","기념일","They made a video for the anniversary."],
+    ["police","/pəˈliːs/","명사","경찰","Dad phoned the police."]],
+ q:["Dad bought a new camcorder.","Wilma recorded a video in the tree house.","There was a thief in the next house."]},
+
+{id:"the-balloon",t:"The Balloon",ko:"열기구",set:"s2",order:0,w:177,p:24,f:false,
+ s:"메이 선생님의 오래된 소원은 열기구를 타 보는 것. 학교 기계들이 잇따라 고장 나 돈이 필요해지자 윌프가 꾀를 내는데, 1등 상품이 바로 열기구 탑승권이다.",
+ v:[["balloon","/bəˈluːn/","명사","기구, 풍선","A hot-air balloon went by."],
+    ["prize","/praɪz/","명사","상품","The first prize was a balloon ride."],
+    ["raffle","/ˈræfl/","명사","추첨 판매","They had a raffle to get some money."],
+    ["go wrong","/ɡəʊ rɒŋ/","표현","고장 나다","The photocopier went wrong."],
+    ["wish","/wɪʃ/","명사","소원","Mrs May had a wish."]],
+ q:["A hot-air balloon went by.","Mrs May wanted to go in a balloon.","The first prize was a balloon ride."]},
+
+{id:"wet-paint",t:"Wet Paint",ko:"페인트 칠하는 중",set:"s3",order:0,w:122,p:16,f:false,
+ s:"아빠가 뒷문에 파란 페인트를 칠한다. 그런데 플로피의 발, 날아온 공, 뛰어든 아이들 때문에 아빠는 몇 번이고 다시 칠해야 한다.",
+ v:[["wet paint","/wet peɪnt/","명사","갓 칠한 페인트","Do not touch the door, it is wet paint."],
+    ["paw","/pɔː/","명사","(동물의) 발","Floppy put his paws on the door."],
+    ["drip","/drɪp/","동사","뚝뚝 떨어지다","The paint dripped on the floor."],
+    ["fed up","/fed ʌp/","형용사","지긋지긋한","Dad was fed up with the door."],
+    ["again","/əˈɡen/","부사","다시","Dad painted the door again."]],
+ q:["Dad painted the back door.","Do not touch the door, it is wet paint.","Floppy put his paws on the door."]},
+
+{id:"swap",t:"Swap!",ko:"바꾸기!",set:"s3",order:0,w:109,p:16,f:false,
+ s:"나딤은 버려진 방망이를 주워 고쳐서 치프의 망가진 로봇과 바꾼다. 로봇을 고쳐 또 다른 것과 바꾸고, 그다음엔 또 — 고치고 바꾸는 일이 끝없이 이어진다.",
+ v:[["swap","/swɒp/","동사","맞바꾸다","Nadim swapped the bat for a robot."],
+    ["mend","/mend/","동사","고치다","He mends broken toys."],
+    ["broken","/ˈbrəʊkən/","형용사","망가진","The robot was broken."],
+    ["bat","/bæt/","명사","(야구) 방망이","He found a bat in the bin."],
+    ["skateboard","/ˈskeɪtbɔːd/","명사","스케이트보드","Biff had a broken skateboard."]],
+ q:["Nadim swapped the bat for a robot.","The robot was broken.","He can mend broken toys."]},
+
+{id:"the-flying-elephant",t:"The Flying Elephant",ko:"나는 코끼리",set:"s3",order:0,w:135,p:16,f:false,
+ s:"장 보러 간 가게 옥상에 뚱뚱한 코끼리 모양 광고 풍선이 얹혀 있다. 아이들이 웃으며 올려다보는 사이, 갑자기 사나운 바람이 몰려온다.",
+ v:[["roof","/ruːf/","명사","지붕","The elephant was on the roof."],
+    ["storm","/stɔːm/","명사","폭풍","A big storm came."],
+    ["blow away","/bləʊ əˈweɪ/","표현","날려 보내다","The wind blew the elephant away."],
+    ["flat","/flæt/","형용사","납작한","The elephant looked flat."],
+    ["silly","/ˈsɪli/","형용사","엉뚱한, 바보 같은","Do not be silly."]],
+ q:["There was a big elephant on the roof.","A storm came with a strong wind.","The wind blew the elephant away."]},
+
+{id:"the-scarf",t:"The Scarf",ko:"목도리",set:"s3",order:0,w:220,p:24,f:true,
+ s:"안니나가 겨울 내내 목도리를 뜬다. 아주 추운 날 공원에 나간 안니나와 친구들 앞에, 목도리를 잡아당기며 놀리는 아이들이 나타난다.",
+ v:[["scarf","/skɑːf/","명사","목도리","Anneena made a long scarf."],
+    ["knit","/nɪt/","동사","뜨개질하다","She knits with her mum."],
+    ["frozen","/ˈfrəʊzn/","형용사","얼어붙은","The pond was frozen."],
+    ["ice","/aɪs/","명사","얼음","The ice broke with a crack."],
+    ["pull","/pʊl/","동사","당기다","The boys pulled her scarf."]],
+ q:["Anneena made a long scarf.","The pond was frozen.","The boys pulled her scarf."]},
+
+{id:"the-dragon-dance",t:"The Dragon Dance",ko:"용춤",set:"s3",order:0,w:192,p:24,f:false,
+ s:"메이 선생님 반 아이들이 새해를 맞아 커다란 종이 용을 만든다. 부모님을 초대해 용춤을 선보이려는데, 용은 얇은 종이로 만들어졌다.",
+ v:[["dragon","/ˈdræɡən/","명사","용","The class made a big dragon."],
+    ["dance","/dɑːns/","명사","춤","The children did a dragon dance."],
+    ["paper","/ˈpeɪpə(r)/","명사","종이","The dragon was made of paper."],
+    ["tear","/teə(r)/","동사","찢다","Do not tear the paper."],
+    ["half","/hɑːf/","명사","반쪽","The dragon tore in half."]],
+ q:["The class made a dragon of paper.","The children did a dragon dance.","The dragon tore in half."]},
+
+{id:"everyone-got-wet",t:"Everyone Got Wet",ko:"다 같이 젖었어",set:"s3",order:0,w:200,p:24,f:true,
+ s:"마당의 물탱크와 호스에서 물이 샌다. 고치려던 엄마와 아빠는 오히려 물벼락을 맞고, 아이들은 옆에서 물놀이 풀을 바라보고 있다.",
+ v:[["leak","/liːk/","동사","새다","The water butt was leaking."],
+    ["hose","/həʊz/","명사","호스","The hose was leaking too."],
+    ["tap","/tæp/","명사","수도꼭지","The top of the tap came off."],
+    ["pool","/puːl/","명사","물놀이 풀","The children got into the pool."],
+    ["mend","/mend/","동사","고치다","Mum and Dad mend the leaks."]],
+ q:["The water butt was leaking.","Mum and Dad mended the hose.","Everyone got wet in the end."]},
+
+{id:"dads-jacket",t:"Dad's Jacket",ko:"아빠의 재킷",set:"s4",order:0,w:154,p:16,f:false,
+ s:"도움이 필요한 아이들을 돕기 위해 마당에서 바자회가 열린다. 잠시 벗어 둔 아빠의 멋진 재킷이 낯선 어른의 손에 들어가는데, 판 돈은 어디로 갈까.",
+ v:[["jacket","/ˈdʒækɪt/","명사","재킷","Dad's jacket was for sale."],
+    ["charity","/ˈtʃærəti/","명사","자선","The children had a charity sale."],
+    ["fit","/fɪt/","명사","(옷의) 맞음새","It is a good fit."],
+    ["pounds","/paʊndz/","명사","파운드(영국 돈)","The jacket was five pounds."],
+    ["clothes","/kləʊðz/","명사","옷","They put some clothes on the table."]],
+ q:["The children had a charity sale.","Dad's jacket was five pounds.","It is a good fit, said the man."]},
+
+{id:"stuck-in-the-mud",t:"Stuck in the Mud",ko:"진창에 빠져서",set:"s4",order:0,w:133,p:16,f:true,
+ s:"장화를 신고 진흙길을 걷던 가족이 냇가에서 꼼짝 못 하는 양을 발견한다. 모두 힘을 합쳐 양을 꺼내지만, 이번엔 사람들이 진창에 발이 빠진다.",
+ v:[["stuck","/stʌk/","형용사","꼼짝 못 하는","The sheep is stuck in the mud."],
+    ["mud","/mʌd/","명사","진흙","His boots were full of mud."],
+    ["sink","/sɪŋk/","동사","가라앉다","He sank into the mud."],
+    ["boot","/buːt/","명사","장화","Put your boots on."],
+    ["get out","/ɡet aʊt/","표현","빠져나오다","The sheep could not get out."]],
+ q:["A sheep was stuck in the mud.","They pulled and pushed the sheep.","Dad sank into the mud."]},
+
+{id:"the-den",t:"The Den",ko:"비밀 아지트",set:"s4",order:0,w:143,p:16,f:false,
+ s:"개울가에서 주운 막대기와 나뭇가지, 짚, 통나무로 아이들이 작은 아지트를 짓는다. 비가 내려 집으로 돌아간 뒤, 일주일 만에 다시 찾아간 아지트에서 뜻밖의 손님을 만난다.",
+ v:[["den","/den/","명사","아지트, 놀이 공간","The children made a den by the stream."],
+    ["stick","/stɪk/","명사","막대기","Wilf found some sticks."],
+    ["straw","/strɔː/","명사","짚","Wilma found some straw."],
+    ["log","/lɒɡ/","명사","통나무","Biff found some logs."],
+    ["rain","/reɪn/","명사","비","It began to rain."]],
+ q:["The children made a den by the stream.","Wilf found some sticks.","It began to rain."]},
+
+{id:"look-smart",t:"Look Smart",ko:"멋지게 보여",set:"s4",order:0,w:189,p:24,f:false,
+ s:"파티에 가려고 엄마가 아이들에게 새 옷을 사 온다. 비프는 원피스, 치프는 셔츠, 키퍼는 새 상의 — 그런데 코코아와 립스틱, 그리고 플로피의 발이 차례로 옷에 닿는다.",
+ v:[["smart","/smɑːt/","형용사","멋진, 말쑥한","Mum wants you to look smart."],
+    ["dress","/dres/","명사","원피스","Biff got a new dress."],
+    ["spill","/spɪl/","동사","쏟다","Be careful not to spill your drink."],
+    ["messy","/ˈmesi/","형용사","지저분한","Their clothes got messy."],
+    ["wash","/wɒʃ/","동사","빨다","The clothes had to be washed."]],
+ q:["Mum wants you to look smart.","Biff got a new dress.","Be careful not to spill your drink."]},
+
+{id:"tug-of-war",t:"Tug of War",ko:"줄다리기",set:"s4",order:0,w:164,p:24,f:false,
+ s:"개울가에서 밧줄을 발견한 아이들이 줄넘기에 이어 줄다리기를 시작한다. 아이들 편 대 어른 편, 아무리 당겨도 어른들이 이기지 못하는 이유는 따로 있다.",
+ v:[["tug of war","/tʌɡ əv wɔː(r)/","명사","줄다리기","Let us have a tug of war."],
+    ["rope","/rəʊp/","명사","밧줄","They found a rope by a tree."],
+    ["pull","/pʊl/","동사","당기다","The children began to pull."],
+    ["let go","/let ɡəʊ/","표현","놓다","Do not let go of the rope."],
+    ["team","/tiːm/","명사","편, 팀","The children were one team."]],
+ q:["They found a rope by a tree.","The children began to pull.","Do not let go of the rope."]},
+
+{id:"an-important-case",t:"An Important Case",ko:"중요한 가방",set:"s4",order:0,w:187,p:24,f:false,
+ s:"공놀이를 하다 공이 덤불로 날아가고, 공을 찾던 키퍼가 아주 중요해 보이는 가방을 발견한다. 열 수도 없는 가방 안에 뭐가 들었을지 모두가 상상하는 사이 경찰과 값비싼 승용차가 도착한다.",
+ v:[["case","/keɪs/","명사","가방","Kipper found a case in the bush."],
+    ["bush","/bʊʃ/","명사","덤불","The ball went into the bush."],
+    ["important","/ɪmˈpɔːtnt/","형용사","중요한","It looks very important."],
+    ["police","/pəˈliːs/","명사","경찰","Wilf's dad called the police."],
+    ["look like","/lʊk laɪk/","표현","~처럼 보이다","It looks like an important case."]],
+ q:["The ball went into the bush.","Kipper found a case in the bush.","It looks very important."]},
+
+{id:"the-seal-pup",t:"The Seal Pup",ko:"아기 물범",set:"dd",order:0,w:184,p:16,f:false,
+ s:"모래사장에 홀로 남은 아기 물범을 발견한 아이들. 엄마 물범이 돌아오길 기다리다 결국 물범 구조대를 부르고, 아이들이 지어 준 이름은 신바드.",
+ v:[["seal","/siːl/","명사","물범","A seal was on the sand."],
+    ["pup","/pʌp/","명사","새끼 동물","The seal pup was all alone."],
+    ["rescue","/ˈreskjuː/","동사","구조하다","A team came to rescue the pup."],
+    ["lost","/lɒst/","형용사","길을 잃은","The pup is lost."],
+    ["well","/wel/","형용사","건강한","The pup got well again."]],
+ q:["A seal pup was on the sand.","The pup was all alone.","A team came to rescue the pup."]},
+
+{id:"the-birthday-candle",t:"The Birthday Candle",ko:"생일 초",set:"dd",order:0,w:164,p:16,f:false,
+ s:"비프와 치프의 일곱 번째 생일 파티에 팀을 나눠 겨루는 놀이가 열린다. 그런데 생일 케이크에 꽂힌 초가 하나뿐이라, 일곱 살에게는 일곱 개가 필요하다고 말하는데.",
+ v:[["candle","/ˈkændl/","명사","초","The cake had one candle."],
+    ["contest","/ˈkɒntest/","명사","시합","This is a contest."],
+    ["team","/tiːm/","명사","편, 팀","Get into teams."],
+    ["present","/ˈpreznt/","명사","선물","Biff had a bag from Anneena."],
+    ["blow out","/bləʊ aʊt/","표현","불어서 끄다","They blew out the candles."]],
+ q:["It was Biff and Chip's birthday.","The cake had one candle.","We need seven candles."]},
+
+{id:"grans-new-glasses",t:"Gran's New Glasses",ko:"할머니의 새 안경",set:"dd",order:0,w:194,p:16,f:false,
+ s:"할머니가 창틀에도 벽에도 페인트를 칠하고, 선반은 수평이 안 맞아 물건이 콩 하고 떨어진다. 저녁엔 피자가 거꾸로 놓여 있는데 — 할머니 눈이 예전 같지 않다.",
+ v:[["glasses","/ˈɡlɑːsɪz/","명사","안경","Gran needs new glasses."],
+    ["paint","/peɪnt/","명사","페인트","Gran had a pot of paint."],
+    ["shelf","/ʃelf/","명사","선반","The shelf was not level."],
+    ["upside down","/ˌʌpsaɪd ˈdaʊn/","표현","거꾸로","The pizza was upside down."],
+    ["odd","/ɒd/","형용사","이상한","That is odd, said Gran."]],
+ q:["Gran had a pot of paint.","The shelf was not level.","The pizza was upside down."]},
+
+{id:"the-stars",t:"The Stars",ko:"별",set:"dd",order:0,w:159,p:16,f:false,
+ s:"주말을 할머니 댁에서 보내는 아이들. 달이 없는 맑은 밤, 할머니가 아이들을 언덕으로 데리고 올라가 별을 보러 간다.",
+ v:[["star","/stɑː(r)/","명사","별","We can go and look at the stars."],
+    ["clear","/klɪə(r)/","형용사","맑은","It was a clear night."],
+    ["moon","/muːn/","명사","달","There was no moon."],
+    ["hill","/hɪl/","명사","언덕","They went up the hill."],
+    ["sunbed","/ˈsʌnbed/","명사","야외용 긴 의자","They took the sunbeds up the hill."]],
+ q:["Can we go and look at the stars?","It was a clear night with no moon.","They went up the hill with Gran."]},
+
+{id:"long-legs",t:"Long Legs",ko:"기다란 다리",set:"dd",order:0,w:186,p:16,f:false,
+ s:"축제에서 키퍼 앞에 어마어마하게 큰 발과 아주 긴 다리가 나타난다. 죽마를 탄 광대였는데, 집에 가는 길에 바람이 아빠 모자를 나무 위로 날려 버린다.",
+ v:[["clown","/klaʊn/","명사","광대","A clown on stilts shook Kipper's hand."],
+    ["stilts","/stɪlts/","명사","죽마","The clown walked on stilts."],
+    ["juggle","/ˈdʒʌɡl/","동사","저글링하다","One clown was juggling six balls."],
+    ["shake hands","/ʃeɪk hændz/","표현","악수하다","The clown shook his hand."],
+    ["wind","/wɪnd/","명사","바람","The wind blew Dad's hat away."]],
+ q:["Kipper saw two big feet and long legs.","A clown on stilts shook his hand.","The wind blew Dad's hat into a tree."]},
+
+{id:"floppy-and-the-skateboard",t:"Floppy and the Skateboard",ko:"플로피와 스케이트보드",set:"dd",order:0,w:170,p:16,f:false,
+ s:"스케이트파크에서 윌프가 멋진 묘기를 보여 준다. 구경하던 플로피도 보드 위에 올라서고, 그대로 언덕 아래로 미끄러져 내려가기 시작한다.",
+ v:[["skateboard","/ˈskeɪtbɔːd/","명사","스케이트보드","Floppy stood on the skateboard."],
+    ["ramp","/ræmp/","명사","경사로","Biff went down the ramp."],
+    ["trick","/trɪk/","명사","묘기","Wilf did a fantastic trick."],
+    ["set off","/set ɒf/","표현","출발하다","Floppy set off down the hill."],
+    ["chase","/tʃeɪs/","동사","뒤쫓다","The children ran after Floppy."]],
+ q:["Wilf did a fantastic trick.","Floppy stood on the skateboard.","Floppy set off down the hill."]},
+
+{id:"painting-the-loft",t:"Painting the Loft",ko:"다락방 페인트칠",set:"x",order:0,w:0,p:16,f:true,
+ s:"할머니 댁에서 하룻밤을 자게 된 아이들. 할머니가 다락방을 비밀 아지트로 쓰라며 사다리를 내려 주는데, 계단이 너무 가팔라 플로피만 올라갈 수 없다.",
+ v:[["loft","/lɒft/","명사","다락방","Gran has a loft in the roof."],
+    ["paint","/peɪnt/","동사","페인트칠하다","Can we paint the loft?"],
+    ["steps","/steps/","명사","계단","The steps were too steep for Floppy."],
+    ["steep","/stiːp/","형용사","가파른","The steps are steep."],
+    ["den","/den/","명사","아지트","You can have it as a den."]],
+ q:["The children went to see Gran.","Gran has a loft in the roof.","Can we paint the loft?"]},
+
+{id:"no-tricks-gran",t:"No Tricks, Gran!",ko:"할머니, 장난치지 마요!",set:"x",order:0,w:195,p:16,f:true,
+ s:"할머니가 팔에 붕대를 감고 아이들 집에 온다. 아이들은 그 팔을 어떻게 다쳤는지 하나씩 짐작해 보는데, 마지막에 엄마만 정답을 맞힌다.",
+ v:[["strap","/stræp/","동사","붕대로 감다","Gran had to strap up her arm."],
+    ["hurt","/hɜːt/","동사","다치게 하다","How did you hurt it, Gran?"],
+    ["trip","/trɪp/","동사","발이 걸려 넘어지다","I tripped on the step."],
+    ["crack","/kræk/","동사","부수다","Did you crack a block?"],
+    ["glad","/ɡlæd/","형용사","기쁜","The children were glad she had come."]],
+ q:["Gran had to strap up her arm.","How did you hurt it, Gran?","I tripped on the step."]},
+
+{id:"the-stinky-plant",t:"The Stinky Plant",ko:"냄새나는 식물",set:"x",order:0,w:0,p:24,f:true,
+ s:"마법 열쇠가 아이들을 열대우림으로 데려간다. 코감기에 걸린 식물학자가 냄새나는 꽃을 찾고 있지만 냄새를 맡을 수가 없어, 아이들이 대신 냄새를 맡아 찾아 나선다.",
+ v:[["botanist","/ˈbɒtənɪst/","명사","식물학자","The botanist studies plants."],
+    ["rainforest","/ˈreɪnfɒrɪst/","명사","열대우림","The key took them to a rainforest."],
+    ["stinky","/ˈstɪŋki/","형용사","냄새나는","This flower is very stinky."],
+    ["smell","/smel/","동사","냄새 맡다","Wilf can smell it."],
+    ["cold","/kəʊld/","명사","감기","The botanist has a bad cold."]],
+ q:["The key took them to a rainforest.","The botanist has a bad cold.","This flower is very stinky."]},
+
+{id:"tom-dad-and-colin",t:"Tom, Dad and Colin",ko:"톰, 아빠 그리고 콜린",set:"x",order:0,w:173,p:16,f:true,
+ s:"아빠와 톰이 당나귀 콜린과 함께 시장으로 떠난다. 길에서 만난 사람들이 저마다 다른 조언을 하는 바람에, 셋은 걷다가 업다가 하며 점점 더 곤란해진다.",
+ v:[["donkey","/ˈdɒŋki/","명사","당나귀","Colin is a small grey donkey."],
+    ["market","/ˈmɑːkɪt/","명사","시장","They are going to the market."],
+    ["ride","/raɪd/","동사","타다","Tom can ride the donkey."],
+    ["advice","/ədˈvaɪs/","명사","조언","Everybody gave them advice."],
+    ["carry","/ˈkæri/","동사","나르다","The donkey has to carry the bags."]],
+ q:["Tom and Dad went to the market.","Colin is a small grey donkey.","Everybody gave them advice."]},
+
+{id:"plants-for-dinner",t:"Plants for Dinner",ko:"저녁 식탁의 식물",set:"x",order:0,w:0,p:24,f:true,
+ s:"우리가 저녁으로 먹는 식물의 어느 부분일까? 뿌리, 줄기, 잎, 꽃, 열매, 씨앗, 새싹까지 그림으로 보여 주는 논픽션.",
+ v:[["root","/ruːt/","명사","뿌리","We eat the roots of carrots."],
+    ["stem","/stem/","명사","줄기","Celery is a stem."],
+    ["leaf","/liːf/","명사","잎","We eat the leaves of lettuce."],
+    ["seed","/siːd/","명사","씨앗","We eat the seeds of beans."],
+    ["fruit","/fruːt/","명사","열매","Tomatoes are a fruit."]],
+ q:["We eat the roots of carrots.","We eat the leaves of lettuce.","We eat the seeds of beans."]}
+];
+
+/* ============================================================
+   STORAGE / STATE
+   ============================================================ */
+var LS_KEY = "ort4-app-v1";
+var db = {books:{}, voice:{accent:"en-GB", rate:1}, best:0};
+try{
+  var raw = localStorage.getItem(LS_KEY);
+  if(raw){
+    var parsed = JSON.parse(raw);
+    if(parsed && typeof parsed === "object"){
+      db.books = parsed.books || {};
+      db.voice = Object.assign({accent:"en-GB", rate:1}, parsed.voice || {});
+      db.best = parsed.best || 0;
+    }
+  }
+}catch(e){ db = {books:{}, voice:{accent:"en-GB", rate:1}, best:0}; }
+
+function saveDB(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(db)); }catch(e){}
+}
+function bookState(id){
+  if(!db.books[id]) db.books[id] = {d:false, r:0, m:""};
+  return db.books[id];
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+function $(sel, root){ return (root||document).querySelector(sel); }
+function $$(sel, root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+function shuffle(a){
+  var arr = a.slice();
+  for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
+  return arr;
+}
+var toastTimer = null;
+function toast(msg){
+  var el = $("#toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 1900);
+}
+function mainBooks(){ return BOOKS.filter(function(b){ return b.set !== "x"; }); }
+function freeBooks(){ return BOOKS.filter(function(b){ return b.f; }); }
+function booksOfSet(set){ return BOOKS.filter(function(b){ return b.set === set; }); }
+function bookById(id){
+  for(var i=0;i<BOOKS.length;i++){ if(BOOKS[i].id === id) return BOOKS[i]; }
+  return null;
+}
+
+/* ============================================================
+   SPEECH — TTS
+   ============================================================ */
+var speechOK = (typeof window !== "undefined" && "speechSynthesis" in window);
+var SRClass = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+var recOK = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && typeof window.MediaRecorder !== "undefined");
+var voices = [];
+
+function loadVoices(){
+  if(!speechOK) return;
+  try{ voices = window.speechSynthesis.getVoices() || []; }catch(e){ voices = []; }
+}
+loadVoices();
+if(speechOK){
+  try{ window.speechSynthesis.onvoiceschanged = loadVoices; }catch(e){}
+}
+
+function pickVoice(lang){
+  if(!voices.length) loadVoices();
+  var exact = null, langPrefix = lang.slice(0,2);
+  for(var i=0;i<voices.length;i++){
+    var v = voices[i];
+    if(v.lang && v.lang.replace("_","-").toLowerCase() === lang.toLowerCase()){ exact = v; break; }
+  }
+  if(exact) return exact;
+  for(var j=0;j<voices.length;j++){
+    var w = voices[j];
+    if(w.lang && w.lang.toLowerCase().indexOf(langPrefix) === 0) return w;
+  }
+  return null;
+}
+
+function speak(text, rateOverride){
+  if(!speechOK){ toast("이 브라우저는 음성 읽기를 지원하지 않아요."); return; }
+  var synth = window.speechSynthesis;
+  try{
+    if(synth.speaking || synth.pending){ synth.cancel(); }
+    var u = new SpeechSynthesisUtterance(String(text));
+    var lang = db.voice.accent || "en-GB";
+    u.lang = lang;
+    u.rate = rateOverride || db.voice.rate || 1;
+    u.pitch = 1;
+    var v = pickVoice(lang);
+    if(v) u.voice = v;
+    u.onerror = function(){ /* 조용히 무시 — iOS에서 자주 나는 interrupted 오류 */ };
+    synth.speak(u);
+  }catch(e){
+    toast("소리를 재생하지 못했어요. 다시 눌러 주세요.");
+  }
+}
+
+/* ============================================================
+   SPEECH — 비교/채점
+   ============================================================ */
+function normToken(t){
+  return String(t).toLowerCase().replace(/[^a-z0-9']/g,"").replace(/^'+|'+$/g,"");
+}
+function tokenize(text){
+  var parts = String(text).trim().split(/\s+/);
+  var out = [];
+  for(var i=0;i<parts.length;i++){
+    var key = normToken(parts[i]);
+    if(key) out.push({raw:parts[i], key:key});
+  }
+  return out;
+}
+function normWords(text){
+  return tokenize(text).map(function(t){ return t.key; });
+}
+/* LCS 정렬: 목표 문장의 각 단어가 인식 결과에서 순서대로 맞았는지 표시 */
+function align(target, heard){
+  var n = target.length, m = heard.length;
+  var dp = [], i, j;
+  for(i=0;i<=n;i++){ dp.push(new Array(m+1)); for(j=0;j<=m;j++) dp[i][j] = 0; }
+  for(i=n-1;i>=0;i--){
+    for(j=m-1;j>=0;j--){
+      dp[i][j] = (target[i] === heard[j]) ? dp[i+1][j+1] + 1 : Math.max(dp[i+1][j], dp[i][j+1]);
+    }
+  }
+  var matched = new Array(n);
+  for(i=0;i<n;i++) matched[i] = false;
+  var pairs = [];
+  var a=0,b=0;
+  while(a<n && b<m){
+    if(target[a] === heard[b]){ matched[a]=true; pairs.push([a,b]); a++; b++; }
+    else if(dp[a+1][b] >= dp[a][b+1]) a++;
+    else b++;
+  }
+  return {matched:matched, pairs:pairs};
+}
+function similar(a,b){
+  if(!a || !b) return false;
+  if(a === b) return true;
+  if(a.length >= 3 && (a.indexOf(b) === 0 || b.indexOf(a) === 0)) return true;
+  var la = a.length, lb = b.length;
+  if(Math.abs(la-lb) > 2) return false;
+  var row = [], prev = [], x, y;
+  for(y=0;y<=lb;y++) prev[y] = y;
+  for(x=1;x<=la;x++){
+    row = [x];
+    for(y=1;y<=lb;y++){
+      var cost = (a.charAt(x-1) === b.charAt(y-1)) ? 0 : 1;
+      row[y] = Math.min(prev[y]+1, row[y-1]+1, prev[y-1]+cost);
+    }
+    prev = row;
+  }
+  return prev[lb] <= 1;
+}
+function scoreOf(targetLen, hits){ return targetLen ? Math.round(hits/targetLen*100) : 0; }
+
+/* 단어별 색상 표시 */
+function markSentence(text, said){
+  var target = tokenize(text);
+  var heard = normWords(said);
+  var al = align(target.map(function(t){ return t.key; }), heard);
+  var usedHeard = {};
+  for(var p=0;p<al.pairs.length;p++) usedHeard[al.pairs[p][1]] = 1;
+  var hits = 0;
+  var html = [];
+  for(var i=0;i<target.length;i++){
+    var cls;
+    if(al.matched[i]){ cls = "hit"; hits++; }
+    else{
+      var near = false;
+      for(var k=0;k<heard.length;k++){
+        if(!usedHeard[k] && similar(target[i].key, heard[k])){ near = true; break; }
+      }
+      cls = near ? "near" : "miss";
+    }
+    html.push('<span class="'+cls+'">'+esc(target[i].raw)+"</span>");
+  }
+  return {html: html.join(" "), score: scoreOf(target.length, hits), hits: hits, total: target.length};
+}
+
+function scoreMessage(pct){
+  if(pct >= 90) return "완벽해요! 원어민처럼 들려요 🎉";
+  if(pct >= 70) return "좋아요! 조금만 더 또박또박 말해 봐요 👍";
+  if(pct >= 40) return "잘하고 있어요. 표시된 단어를 다시 들어 보세요 💪";
+  return "다시 한 번 천천히 말해 볼까요? 🐢";
+}
+
+/* ============================================================
+   LIBRARY RENDER
+   ============================================================ */
+var filter = "all";
+var query = "";
+var openCards = {};
+
+var CHIPS = [
+  {id:"all", label:"전체"},
+  {id:"s1", label:"Stories"},
+  {id:"s2", label:"More A"},
+  {id:"s3", label:"More B"},
+  {id:"s4", label:"More C"},
+  {id:"dd", label:"Decode"},
+  {id:"free", label:"무료 eBook"}
+];
+
+function renderProgress(){
+  var main = mainBooks();
+  var done = main.filter(function(b){ var st = db.books[b.id]; return st && st.d; }).length;
+  var pct = main.length ? Math.round(done/main.length*100) : 0;
+  $("#progText").textContent = main.length + "권 중 " + done + "권 완료";
+  $("#progPct").textContent = pct + "%";
+  $("#progFill").style.width = pct + "%";
+  $("#miniFill").style.width = pct + "%";
+  var f = freeBooks();
+  var fd = f.filter(function(b){ var st = db.books[b.id]; return st && st.d; }).length;
+  $("#progNote").textContent = "무료 eBook " + f.length + "권 중 " + fd + "권 읽음" + (done === main.length ? " · 30권 완독! 🎉" : "");
+}
+
+function renderChips(){
+  var html = "";
+  for(var i=0;i<CHIPS.length;i++){
+    var c = CHIPS[i], n = 0;
+    if(c.id === "all") n = mainBooks().length;
+    else if(c.id === "free") n = freeBooks().length;
+    else n = booksOfSet(c.id).length;
+    html += '<button class="chip'+(filter===c.id?" on":"")+'" data-filter="'+c.id+'">'+esc(c.label)+"<b>"+n+"</b></button>";
+  }
+  $("#chips").innerHTML = html;
+}
+
+function metaHTML(b){
+  var bits = [];
+  if(b.set === "x"){ bits.push("Oxford Level 4"); }
+  else { bits.push(SETS[b.set].name); }
+  if(b.w) bits.push("약 " + b.w + "단어");
+  if(b.p) bits.push(b.p + "쪽");
+  var h = "";
+  for(var i=0;i<bits.length;i++) h += "<i>" + esc(bits[i]) + "</i>";
+  return h;
+}
+
+function vocabHTML(b){
+  var h = '<ul class="vocab">';
+  for(var i=0;i<b.v.length;i++){
+    var v = b.v[i];
+    h += '<li class="v-item">' +
+      '<button class="v-btn" data-i="'+i+'">' +
+        "<b>" + esc(v[0]) + "</b>" +
+        '<span class="ipa">' + esc(v[1]) + "</span>" +
+        '<span class="pos">' + esc(v[2]) + "</span>" +
+        '<span class="chev">▾</span>' +
+      "</button>" +
+      '<button class="v-speak" data-word="' + esc(v[0]) + '" aria-label="' + esc(v[0]) + ' 발음 듣기">🔊</button>' +
+      '<div class="v-more" hidden>' +
+        '<p class="v-ko">' + esc(v[3]) + "</p>" +
+        '<p class="v-ex">' + esc(v[4]) + "</p>" +
+        '<button class="v-ex-btn" data-say="' + esc(v[4]) + '">🔊 예문 듣기</button>' +
+      "</div></li>";
+  }
+  return h + "</ul>";
+}
+
+function sentenceHTML(b, idx){
+  var text = b.q[idx];
+  return '<div class="sent" data-sid="' + esc(b.id) + ":" + idx + '">' +
+    '<p class="sent-en">' + esc(text) + "</p>" +
+    '<div class="sent-actions">' +
+      '<button class="mini speak" data-say="' + esc(text) + '">🔊 듣기</button>' +
+      '<button class="mini ghost slow" data-say="' + esc(text) + '" data-slow="1">🐢 천천히</button>' +
+      '<button class="mini mic" data-target="' + esc(text) + '">🎤 따라 말하기</button>' +
+    "</div>" +
+    '<div class="sent-fb" hidden></div>' +
+  "</div>";
+}
+
+function sentencesBlock(b){
+  var h = '<div class="block-title"><span>🎤 문장 듣고 따라 말하기</span><span class="hint">' + b.q.length + "문장</span></div>";
+  for(var i=0;i<b.q.length;i++) h += sentenceHTML(b, i);
+  return h;
+}
+
+function cardHTML(b){
+  var st = bookState(b.id);
+  var open = !!openCards[b.id];
+  var idxLabel = (b.set === "s1" && b.order) ? b.order : "";
+  var h = '<article class="card' + (st.d ? " done" : "") + (open ? " open" : "") + '" data-id="' + esc(b.id) + '">';
+  h += '<div class="card-head" data-toggle="' + esc(b.id) + '">';
+  h += '<div class="idx">' + (idxLabel || '<span class="idx-ico">📖</span>') + "</div>";
+  h += "<div class=\"titles\"><h3>" + esc(b.t) + (b.f ? '<span class="free">무료 eBook</span>' : "") + "</h3>";
+  h += '<p class="ko">' + esc(b.ko) + "</p>";
+  h += '<div class="meta">' + metaHTML(b) + "</div></div>";
+  h += '<button class="done-btn' + (st.d ? " on" : "") + '" data-done="' + esc(b.id) + '" aria-label="읽음 완료">' + (st.d ? "✓" : "") + "</button>";
+  h += "</div>";
+  h += '<div class="card-body"' + (open ? "" : " hidden") + ">";
+  h += '<p class="summary">' + esc(b.s) + "</p>";
+  h += '<div class="block-title"><span>📌 핵심 단어 ' + b.v.length + "개</span><span class=\"hint\">단어를 누르면 뜻</span></div>";
+  h += vocabHTML(b);
+  h += sentencesBlock(b);
+  var stars = "";
+  for(var s=1;s<=5;s++) stars += '<button class="star' + (st.r >= s ? " on" : "") + '" data-star="' + esc(b.id) + '" data-v="' + s + '" aria-label="별 ' + s + '개">★</button>';
+  h += '<div class="rate-row"><span class="rate-label">별점</span><div class="stars">' + stars + "</div></div>";
+  h += '<input class="memo" data-memo="' + esc(b.id) + '" placeholder="한 줄 메모 (예: 목도리 장면이 재밌었어)" value="' + esc(st.m || "") + '">';
+  h += '<p class="memo-saved"></p>';
+  h += '<button class="read-toggle' + (st.d ? " on" : "") + '" data-done="' + esc(b.id) + '">' +
+    (st.d ? "✓ 읽음 완료 · 다시 누르면 해제" : "이 책 읽음 완료로 표시") + "</button>";
+  h += "</div></article>";
+  return h;
+}
+
+function matchesQuery(b){
+  if(!query) return true;
+  var q = query.toLowerCase();
+  var hay = b.t + " " + b.ko + " " + SETS[b.set].name;
+  for(var i=0;i<b.v.length;i++) hay += " " + b.v[i][0] + " " + b.v[i][3];
+  for(var j=0;j<b.q.length;j++) hay += " " + b.q[j];
+  return hay.toLowerCase().indexOf(q) !== -1;
+}
+
+function sectionHTML(title, list, note){
+  var visible = list.filter(matchesQuery);
+  if(!visible.length) return "";
+  var h = '<div class="sec"><h2>' + esc(title) + "</h2><span>" + visible.length + "권</span></div>";
+  if(note) h += '<p class="sec-note">' + note + "</p>";
+  for(var i=0;i<visible.length;i++) h += cardHTML(visible[i]);
+  return h;
+}
+
+function renderLibrary(){
+  var html = "";
+  if(filter === "all" || filter === "free"){
+    var keys = ["s1","s2","s3","s4","dd"];
+    for(var i=0;i<keys.length;i++){
+      var list = booksOfSet(keys[i]);
+      if(filter === "free") list = list.filter(function(b){ return b.f; });
+      html += sectionHTML(SETS[keys[i]].name, list, (filter === "all" ? SETS[keys[i]].note : ""));
+    }
+    html += sectionHTML(SETS.x.name, booksOfSet("x"), SETS.x.note);
+  } else {
+    html += sectionHTML(SETS[filter].name, booksOfSet(filter), SETS[filter].note);
+  }
+  if(!html) html = '<p class="empty">검색 결과가 없어요. 다른 단어로 찾아보세요.</p>';
+  $("#list").innerHTML = html;
+  var shown = $$("#list .card").length;
+  $("#countPill").textContent = shown + "권";
+  renderProgress();
+  renderChips();
+}
+
+/* ============================================================
+   EVENT HANDLERS — LIBRARY
+   ============================================================ */
+$("#chips").addEventListener("click", function(e){
+  var btn = e.target.closest(".chip");
+  if(!btn) return;
+  filter = btn.getAttribute("data-filter");
+  renderLibrary();
+});
+$("#q").addEventListener("input", function(e){
+  query = e.target.value.trim();
+  renderLibrary();
+});
+$("#list").addEventListener("click", function(e){
+  var sp = e.target.closest("[data-say]");
+  if(sp){
+    e.stopPropagation();
+    var slow = sp.getAttribute("data-slow") === "1";
+    speak(sp.getAttribute("data-say"), slow ? 0.75 : null);
+    return;
+  }
+  var ws = e.target.closest(".v-speak");
+  if(ws){ e.stopPropagation(); speak(ws.getAttribute("data-word")); return; }
+  var vb = e.target.closest(".v-btn");
+  if(vb){
+    var more = vb.parentNode.querySelector(".v-more");
+    if(more) more.hidden = !more.hidden;
+    vb.classList.toggle("open");
+    return;
+  }
+  var doneBtn = e.target.closest(".done-btn");
+  if(doneBtn){ e.stopPropagation(); toggleDone(doneBtn.getAttribute("data-done")); return; }
+  var star = e.target.closest(".star");
+  if(star){ e.stopPropagation(); setStar(star.getAttribute("data-star"), parseInt(star.getAttribute("data-v"),10)); return; }
+  var mic = e.target.closest(".mic");
+  if(mic){ e.stopPropagation(); startListening(mic.closest(".sent"), mic.getAttribute("data-target")); return; }
+  var head = e.target.closest("[data-toggle]");
+  if(head){
+    var id = head.getAttribute("data-toggle");
+    var card = head.closest(".card");
+    var body = card.querySelector(".card-body");
+    body.hidden = !body.hidden;
+    openCards[id] = !body.hidden;
+    return;
+  }
+});
+$("#list").addEventListener("input", function(e){
+  var m = e.target.closest(".memo");
+  if(!m) return;
+  var id = m.getAttribute("data-memo");
+  var st = bookState(id);
+  st.m = m.value;
+  saveDB();
+  var txt = m.parentNode.querySelector(".memo-saved");
+  if(txt){ txt.textContent = "저장됨"; clearTimeout(txt._t); txt._t = setTimeout(function(){ txt.textContent = ""; }, 1400); }
+});
+
+function toggleDone(id){
+  var st = bookState(id);
+  st.d = !st.d;
+  saveDB();
+  renderLibrary();
+  var b = bookById(id);
+  if(st.d) toast(b ? b.ko + " 완독! ✓" : "완독!");
+}
+function setStar(id, v){
+  var st = bookState(id);
+  st.r = (st.r === v) ? 0 : v;
+  saveDB();
+  var card = document.querySelector('.card[data-id="' + id + '"]');
+  if(!card) return;
+  $$(".star", card).forEach(function(s){
+    s.classList.toggle("on", parseInt(s.getAttribute("data-v"),10) <= st.r);
+  });
+}
+
+/* ============================================================
+   SPEECH LISTENING (STT) + FALLBACK
+   ============================================================ */
+var activeRec = null;
+
+function fbHTML(){
+  return '<div class="fallback">' +
+    '<p class="note">🎧 문장을 몇 번 듣고, 입으로 소리 내어 읽어 보세요. 아래에서 내 목소리를 녹음해 직접 들어 볼 수 있어요.</p>' +
+    '<div class="record-wrap"><button class="mini rec-start">🎙 녹음해서 들어보기</button>' +
+    '<button class="mini self-ok">✓ 잘 읽었어요</button></div></div>';
+}
+
+function renderFallback(row, text, msg){
+  var fb = row.querySelector(".sent-fb");
+  fb.hidden = false;
+  fb.innerHTML = (msg ? '<p class="warn">' + esc(msg) + "</p>" : "") + fbHTML();
+}
+
+function startListening(row, text){
+  if(!row) return;
+  if(!SRClass){
+    renderFallback(row, text, "이 브라우저는 음성 인식(발음 평가)을 지원하지 않아요. Safari·Chrome 최신 버전에서 열면 자동 채점이 돼요.");
+    wireFallback(row, text);
+    return;
+  }
+  if(row.classList.contains("listening")) return;
+
+  var micBtn = row.querySelector(".mic");
+  var stopBtn = row.querySelector(".mic-stop");
+
+  var rec;
+  try{ rec = new SRClass(); }
+  catch(err){ renderFallback(row, text, "음성 인식을 시작할 수 없어요. 아래 녹음 기능을 사용해 보세요."); wireFallback(row, text); return; }
+
+  rec.lang = db.voice.accent || "en-GB";
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  rec.continuous = false;
+
+  var finished = false;
+  row.classList.add("listening");
+  micBtn.classList.add("rec");
+  micBtn.textContent = "● 듣는 중…";
+  var fb = row.querySelector(".sent-fb");
+  fb.hidden = false;
+  fb.innerHTML = '<p class="note">🎤 이제 문장을 또박또박 말해 보세요…</p>';
+
+  function cleanup(){
+    row.classList.remove("listening");
+    micBtn.classList.remove("rec");
+    micBtn.textContent = "🎤 따라 말하기";
+    try{ rec.stop(); }catch(e){}
+    try{ rec.abort && rec.abort(); }catch(e){}
+  }
+  rec.onresult = function(ev){
+    if(finished) return;
+    finished = true;
+    cleanup();
+    var said = "";
+    for(var i=0;i<ev.results.length;i++){ said += ev.results[i][0].transcript + " "; }
+    showScore(row, text, said.trim());
+  };
+  rec.onerror = function(ev){
+    if(finished) return;
+    finished = true;
+    cleanup();
+    var code = (ev && ev.error) ? ev.error : "unknown";
+    var msg = "음성 인식에 문제가 생겼어요.";
+    if(code === "not-allowed" || code === "service-not-allowed"){
+      msg = "마이크 사용이 허용되지 않았어요. 주소창의 자물쇠/설정에서 마이크를 허용하거나, 아래 녹음 기능을 써 보세요.";
+    } else if(code === "audio-capture"){
+      msg = "마이크를 찾지 못했어요. 다른 앱이 마이크를 쓰고 있지 않은지 확인해 주세요.";
+    } else if(code === "network"){
+      msg = "음성 인식 서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요. (일부 브라우저는 인터넷 없이 인식이 안 돼요)";
+    } else if(code === "no-speech"){
+      msg = "소리가 잘 들리지 않았어요. 조금 크게 다시 말해 볼까요?";
+    } else if(code === "aborted"){
+      msg = "인식이 중단됐어요. 다시 눌러 주세요.";
+    }
+    renderFallback(row, text, msg);
+    wireFallback(row, text);
+  };
+  rec.onend = function(){
+    if(!finished){
+      finished = true;
+      cleanup();
+      renderFallback(row, text, "음성을 듣지 못했어요. 다시 시도하거나 아래 녹음 기능을 써 보세요.");
+      wireFallback(row, text);
+    }
+  };
+  try{ rec.start(); }
+  catch(err){
+    finished = true;
+    cleanup();
+    renderFallback(row, text, "음성 인식을 시작할 수 없어요. 이 화면에서는 자동 채점이 제한될 수 있어요.");
+    wireFallback(row, text);
+  }
+}
+
+function showScore(row, text, said){
+  var res = markSentence(text, said);
+  var fb = row.querySelector(".sent-fb");
+  fb.hidden = false;
+  var level = res.score >= 70 ? "" : (res.score >= 40 ? " mid" : " low");
+  var noHear = !said;
+  fb.innerHTML =
+    '<div class="score-row">' +
+      '<span class="score-big' + level + '">' + (noHear ? "—" : res.score + "%") + "</span>" +
+      '<span class="score-msg">' + (noHear ? "말소리가 인식되지 않았어요. 마이크 가까이에서 다시 시도해 보세요." : scoreMessage(res.score)) + "</span>" +
+    "</div>" +
+    (said ? '<p class="said">인식된 말: “' + esc(said) + '”</p>' : "") +
+    '<p class="mark">' + res.html + "</p>" +
+    '<p class="note">🟩 정확히 인식 · 🟨 비슷하게 인식 · 🟥 빠졌거나 다르게 인식 (' + res.hits + "/" + res.total + " 단어)</p>" +
+    '<div class="sent-actions">' +
+      '<button class="mini retry">🎤 다시 말하기</button>' +
+      '<button class="mini ghost speak" data-say="' + esc(text) + '">🔊 원문 듣기</button>' +
+    "</div>";
+  var retry = fb.querySelector(".retry");
+  if(retry) retry.addEventListener("click", function(){ startListening(row, text); });
+}
+
+function wireFallback(row, text){
+  var fb = row.querySelector(".sent-fb");
+  if(!fb) return;
+  var startBtn = fb.querySelector(".rec-start");
+  if(startBtn){
+    startBtn.addEventListener("click", function(){ startRecording(row, text); });
+  }
+  var ok = fb.querySelector(".self-ok");
+  if(ok){
+    ok.addEventListener("click", function(){
+      toast("스스로 확인했어요. 잘했어요! ✓");
+      ok.textContent = "✓ 확인 완료";
+      ok.disabled = true;
+    });
+  }
+}
+
+function startRecording(row, text){
+  var fb = row.querySelector(".sent-fb");
+  if(!recOK){
+    fb.innerHTML = '<p class="warn">이 환경에서는 녹음도 지원되지 않아요. 문장을 소리 내어 읽고 스스로 확인해 보세요.</p>' + fbHTML();
+    wireFallback(row, text);
+    return;
+  }
+  var wrap = fb.querySelector(".record-wrap");
+  if(wrap) wrap.innerHTML = '<span class="note">🎙 녹음 준비 중…</span>';
+
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    var chunks = [];
+    var mr;
+    try{ mr = new MediaRecorder(stream); }
+    catch(err){
+      stream.getTracks().forEach(function(t){ t.stop(); });
+      fb.innerHTML = '<p class="warn">이 브라우저에서는 녹음을 지원하지 않아요.</p>' + fbHTML();
+      wireFallback(row, text);
+      return;
+    }
+    mr.ondataavailable = function(ev){ if(ev.data && ev.data.size) chunks.push(ev.data); };
+    mr.onstop = function(){
+      stream.getTracks().forEach(function(t){ t.stop(); });
+      var blob = new Blob(chunks, {type: chunks.length && chunks[0].type ? chunks[0].type : "audio/webm"});
+      var url = URL.createObjectURL(blob);
+      fb.innerHTML = '<p class="note">내 목소리예요. 원문과 비교해 들어 보세요.</p>' +
+        '<audio controls src="' + url + '"></audio>' +
+        '<div class="sent-actions" style="margin-top:8px">' +
+          '<button class="mini ghost speak" data-say="' + esc(text) + '">🔊 원문 듣기</button>' +
+          '<button class="mini rec-again">🎙 다시 녹음</button>' +
+          '<button class="mini self-ok">✓ 잘 읽었어요</button>' +
+        "</div>";
+      var again = fb.querySelector(".rec-again");
+      if(again) again.addEventListener("click", function(){ startRecording(row, text); });
+      var ok = fb.querySelector(".self-ok");
+      if(ok) ok.addEventListener("click", function(){ toast("스스로 확인했어요. 잘했어요! ✓"); ok.textContent = "✓ 확인 완료"; ok.disabled = true; });
+    };
+    activeRec = mr;
+    try{ mr.start(); }catch(err){}
+    var secs = 8;
+    wrap = fb.querySelector(".record-wrap");
+    var btn = document.createElement("button");
+    btn.className = "mini rec-stop";
+    btn.textContent = "■ 녹음 중… (" + secs + "초) 탭해서 정지";
+    if(wrap){ wrap.innerHTML = ""; wrap.appendChild(btn); }
+    btn.addEventListener("click", function(){ try{ mr.stop(); }catch(e){} });
+    var iv = setInterval(function(){
+      secs--;
+      if(secs <= 0){
+        clearInterval(iv);
+        try{ mr.stop(); }catch(e){}
+      } else {
+        btn.textContent = "■ 녹음 중… (" + secs + "초) 탭해서 정지";
+      }
+    }, 1000);
+  }).catch(function(err){
+    fb.innerHTML = '<p class="warn">마이크를 사용할 수 없어요. (권한 거부 또는 이 화면에서는 녹음 불가) 문장을 소리 내어 읽고 스스로 확인해 보세요.</p>' + fbHTML();
+    wireFallback(row, text);
+  });
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+var quiz = {scope:"all", book:"", count:10, dir:"mix", items:[], idx:0, score:0, wrong:[], answered:false};
+
+var QUIZ_COUNTS = [5, 10, 20, 0];
+var QUIZ_DIRS = [{id:"mix",label:"섞어서"},{id:"w2k",label:"영어 → 뜻"},{id:"k2w",label:"뜻 → 영어"}];
+
+function poolFor(scope){
+  if(scope === "all") return BOOKS;
+  if(scope === "free") return BOOKS.filter(function(b){ return b.f; });
+  if(SETS[scope]) return booksOfSet(scope);
+  var b = bookById(scope);
+  return b ? [b] : [];
+}
+function entriesOf(list){
+  var out = [];
+  for(var i=0;i<list.length;i++){
+    var b = list[i];
+    for(var j=0;j<b.v.length;j++){
+      var v = b.v[j];
+      out.push({w:v[0], ipa:v[1], pos:v[2], ko:v[3], ex:v[4], book:b.t, bid:b.id});
+    }
+  }
+  return out;
+}
+function uniqueWords(pool){
+  var seen = {}, out = [];
+  for(var i=0;i<pool.length;i++){
+    var k = pool[i].w.toLowerCase();
+    if(seen[k]) continue;
+    seen[k] = 1;
+    out.push(pool[i]);
+  }
+  return out;
+}
+function makeQuestions(pool, count, dir, askList){
+  var uniq = uniqueWords(pool);
+  var picked;
+  if(askList && askList.length){
+    picked = uniqueWords(askList);
+  } else {
+    picked = shuffle(uniq).slice(0, count > 0 ? Math.min(count, uniq.length) : uniq.length);
+  }
+  var qs = [];
+  for(var i=0;i<picked.length;i++){
+    var item = picked[i];
+    var type = (dir === "mix") ? (Math.random() < 0.5 ? "w2k" : "k2w") : dir;
+    var key = (type === "w2k") ? "ko" : "w";
+    var others = [], seenVals = {};
+    seenVals[item[key]] = 1;
+    for(var j=0;j<uniq.length;j++){
+      var o = uniq[j];
+      if(o === item) continue;
+      if(seenVals[o[key]]) continue;
+      seenVals[o[key]] = 1;
+      others.push(o[key]);
+    }
+    var dist = shuffle(others).slice(0,3);
+    if(dist.length < 3) continue;
+    qs.push({type:type, item:item, answer:item[key], options:shuffle([item[key]].concat(dist))});
+  }
+  return qs;
+}
+
+function renderQuizSetup(){
+  var scopeHtml = "";
+  var scopes = [{id:"all",label:"전체"}].concat(
+    ["s1","s2","s3","s4","dd"].map(function(s){ return {id:s,label:SETS[s].name}; })
+  ).concat([{id:"free",label:"무료 eBook"}]);
+  for(var i=0;i<scopes.length;i++){
+    scopeHtml += '<button class="chip' + (quiz.scope === scopes[i].id ? " on" : "") + '" data-qscope="' + scopes[i].id + '">' + esc(scopes[i].label) + "</button>";
+  }
+  $("#quizScope").innerHTML = scopeHtml;
+
+  var countHtml = "";
+  for(var j=0;j<QUIZ_COUNTS.length;j++){
+    var c = QUIZ_COUNTS[j];
+    countHtml += '<button class="chip' + (quiz.count === c ? " on" : "") + '" data-qcount="' + c + '">' + (c ? c + "문제" : "전체") + "</button>";
+  }
+  $("#quizCount").innerHTML = countHtml;
+
+  var dirHtml = "";
+  for(var k=0;k<QUIZ_DIRS.length;k++){
+    dirHtml += '<button class="chip' + (quiz.dir === QUIZ_DIRS[k].id ? " on" : "") + '" data-qdir="' + QUIZ_DIRS[k].id + '">' + esc(QUIZ_DIRS[k].label) + "</button>";
+  }
+  $("#quizDir").innerHTML = dirHtml;
+
+  var sel = '<option value="">책 하나만 골라서 풀기…</option>';
+  for(var m=0;m<BOOKS.length;m++){
+    var b = BOOKS[m];
+    sel += '<option value="' + esc(b.id) + '"' + (quiz.book === b.id ? " selected" : "") + ">" + esc(b.ko + " · " + b.t) + "</option>";
+  }
+  $("#quizBook").innerHTML = sel;
+
+  var pool = entriesOf(poolFor(quiz.book || quiz.scope));
+  var n = uniqueWords(pool).length;
+  $("#quizPoolInfo").textContent = "이 범위의 단어 " + n + "개 · 최고 점수 " + (db.best || 0) + "%";
+}
+
+function startQuiz(list){
+  var pool = entriesOf(poolFor(quiz.book || quiz.scope));
+  var qs = list || makeQuestions(pool, quiz.count, quiz.dir);
+  if(!qs.length){ toast("이 범위에는 문제를 만들 단어가 부족해요."); return; }
+  quiz.items = qs;
+  quiz.idx = 0;
+  quiz.score = 0;
+  quiz.wrong = [];
+  quiz.answered = false;
+  $("#quizSetup").hidden = true;
+  $("#quizResult").hidden = true;
+  $("#quizRun").hidden = false;
+  renderQuestion();
+}
+
+function renderQuestion(){
+  var q = quiz.items[quiz.idx];
+  if(!q){ showResult(); return; }
+  var total = quiz.items.length;
+  var pct = Math.round((quiz.idx)/total*100);
+  var isW = q.type === "w2k";
+  var promptHTML = isW
+    ? '<div class="qprompt"><b>' + esc(q.item.w) + '</b><button class="mini speak" data-say="' + esc(q.item.w) + '">🔊</button></div>' +
+      '<p class="qipa">' + esc(q.item.ipa) + " · " + esc(q.item.pos) + "</p>"
+    : '<div class="qprompt"><span class="korprompt">' + esc(q.item.ko) + "</span></div>" +
+      '<p class="qipa">' + esc(q.item.pos) + " · 알맞은 영어 단어를 골라 보세요</p>";
+  var optsHTML = "";
+  for(var i=0;i<q.options.length;i++){
+    optsHTML += '<button class="opt" data-opt="' + esc(q.options[i]) + '">' + esc(q.options[i]) + "</button>";
+  }
+  $("#qcard").innerHTML =
+    '<div class="qtop"><span>' + (quiz.idx+1) + " / " + total + "</span><span>정답 " + quiz.score + "</span></div>" +
+    '<div class="qbar"><i style="width:' + pct + '%"></i></div>' +
+    '<p class="qlabel">' + (isW ? "이 단어의 뜻은?" : "이 뜻에 맞는 단어는?") + "</p>" +
+    promptHTML +
+    '<div class="opts" id="qOpts">' + optsHTML + "</div>" +
+    '<div class="qfb" id="qfb" hidden></div>' +
+    '<button class="cta" id="btnNext" hidden>' + (quiz.idx+1 === total ? "결과 보기" : "다음 문제") + "</button>";
+  quiz.answered = false;
+
+  $("#qOpts").addEventListener("click", function(e){
+    var btn = e.target.closest(".opt");
+    if(!btn || quiz.answered) return;
+    answerQuestion(btn.getAttribute("data-opt"));
+  });
+  $("#btnNext").addEventListener("click", function(){
+    quiz.idx++;
+    if(quiz.idx >= quiz.items.length) showResult();
+    else renderQuestion();
+  });
+}
+
+function answerQuestion(choice){
+  var q = quiz.items[quiz.idx];
+  quiz.answered = true;
+  var correct = (choice === q.answer);
+  if(correct) quiz.score++;
+  else quiz.wrong.push(q);
+
+  $$("#qOpts .opt").forEach(function(b){
+    var v = b.getAttribute("data-opt");
+    b.disabled = true;
+    if(v === q.answer) b.classList.add("good");
+    else if(v === choice) b.classList.add("bad");
+    else b.classList.add("dim");
+  });
+  var fb = $("#qfb");
+  fb.hidden = false;
+  fb.innerHTML =
+    '<p class="title ' + (correct ? "ok" : "no") + '">' + (correct ? "정답이에요! ✓" : "아쉬워요 ✗") + "</p>" +
+    '<p class="detail"><b>' + esc(q.item.w) + "</b> " + esc(q.item.ipa) + " · " + esc(q.item.pos) + " — " + esc(q.item.ko) + "</p>" +
+    '<p class="ex">' + esc(q.item.ex) + "</p>" +
+    '<div class="sent-actions" style="margin-top:8px"><button class="mini speak" data-say="' + esc(q.item.w) + '">🔊 단어 듣기</button>' +
+    '<button class="mini ghost speak" data-say="' + esc(q.item.ex) + '">🔊 예문 듣기</button></div>';
+  $("#btnNext").hidden = false;
+  $("#qcard").querySelector(".qbar i").style.width = Math.round((quiz.idx+1)/quiz.items.length*100) + "%";
+}
+
+function showResult(){
+  $("#quizRun").hidden = true;
+  $("#quizResult").hidden = false;
+  var total = quiz.items.length;
+  var pct = total ? Math.round(quiz.score/total*100) : 0;
+  if(pct > (db.best || 0)){ db.best = pct; saveDB(); }
+  var msg = pct >= 90 ? "거의 다 맞혔어요! 이 책의 단어는 이제 내 것 🎉" :
+            pct >= 70 ? "좋아요! 틀린 단어만 한 번 더 보면 완벽해요 👍" :
+            pct >= 40 ? "차근차근 하고 있어요. 틀린 단어를 다시 풀어 봐요 💪" :
+                        "괜찮아요. 단어를 듣고 다시 도전해 봐요 🐢";
+  var wrongHTML = "";
+  if(quiz.wrong.length){
+    wrongHTML = '<div class="block-title"><span>다시 볼 단어 ' + quiz.wrong.length + "개</span></div><div class=\"wrong-list\">";
+    for(var i=0;i<quiz.wrong.length;i++){
+      var w = quiz.wrong[i];
+      wrongHTML += '<div class="wrong-item"><b>' + esc(w.item.w) + "</b><span>" + esc(w.item.ko) +
+        '<br><button class="mini speak" data-say="' + esc(w.item.w) + '" style="margin-top:4px">🔊</button></span></div>';
+    }
+    wrongHTML += "</div>";
+  }
+  $("#quizResult").innerHTML =
+    '<div class="result-hero"><div class="big">' + pct + '%</div><p>' + quiz.score + " / " + total + " 문제 정답</p><p>" + msg + "</p></div>" +
+    '<button class="cta" id="btnWrong"' + (quiz.wrong.length ? "" : " disabled") + '>틀린 단어만 다시 풀기</button>' +
+    '<button class="cta alt" id="btnAgain">같은 범위로 다시 풀기</button>' +
+    '<button class="cta alt" id="btnSetup">범위 바꾸기</button>' +
+    wrongHTML;
+  var bw = $("#btnWrong");
+  if(bw) bw.addEventListener("click", function(){
+    var basePool = entriesOf(poolFor(quiz.book || quiz.scope));
+    var qs = makeQuestions(basePool, 0, quiz.dir, quiz.wrong.map(function(w){ return w.item; }));
+    if(!qs.length){ toast("다시 풀 문제를 만들 수 없어요. 범위를 바꿔 보세요."); return; }
+    quiz.items = qs; quiz.idx = 0; quiz.score = 0; quiz.wrong = [];
+    $("#quizResult").hidden = true; $("#quizRun").hidden = false;
+    renderQuestion();
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+  var ba = $("#btnAgain");
+  if(ba) ba.addEventListener("click", function(){ startQuiz(); window.scrollTo({top:0, behavior:"smooth"}); });
+  var bs = $("#btnSetup");
+  if(bs) bs.addEventListener("click", function(){
+    $("#quizResult").hidden = true;
+    $("#quizSetup").hidden = false;
+    renderQuizSetup();
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+$("#quizScope").addEventListener("click", function(e){
+  var b = e.target.closest("[data-qscope]");
+  if(!b) return;
+  quiz.scope = b.getAttribute("data-qscope");
+  quiz.book = "";
+  renderQuizSetup();
+});
+$("#quizCount").addEventListener("click", function(e){
+  var b = e.target.closest("[data-qcount]");
+  if(!b) return;
+  quiz.count = parseInt(b.getAttribute("data-qcount"),10);
+  renderQuizSetup();
+});
+$("#quizDir").addEventListener("click", function(e){
+  var b = e.target.closest("[data-qdir]");
+  if(!b) return;
+  quiz.dir = b.getAttribute("data-qdir");
+  renderQuizSetup();
+});
+$("#quizBook").addEventListener("change", function(e){
+  quiz.book = e.target.value;
+  renderQuizSetup();
+});
+$("#btnStartQuiz").addEventListener("click", function(){ startQuiz(); });
+
+/* quiz 카드 내부 🔊 버튼 (이벤트 위임) */
+document.addEventListener("click", function(e){
+  var sp = e.target.closest("#qcard [data-say], #quizResult [data-say]");
+  if(!sp) return;
+  speak(sp.getAttribute("data-say"));
+});
+
+/* ============================================================
+   SPEAK VIEW
+   ============================================================ */
+var speakBookId = BOOKS[0].id;
+
+function renderVoiceBars(){
+  var accent = db.voice.accent, rate = db.voice.rate;
+  $$(".voicebar").forEach(function(bar){
+    bar.innerHTML =
+      '<div class="segs" data-seg="accent">' +
+        '<button data-v="en-GB" class="' + (accent === "en-GB" ? "on" : "") + '">🇬🇧 영국 발음</button>' +
+        '<button data-v="en-US" class="' + (accent === "en-US" ? "on" : "") + '">🇺🇸 미국 발음</button>' +
+      "</div>" +
+      '<div class="segs" data-seg="rate">' +
+        '<button data-v="0.75" class="' + (rate === 0.75 ? "on" : "") + '">0.75× 느리게</button>' +
+        '<button data-v="1" class="' + (rate === 1 ? "on" : "") + '">1× 보통</button>' +
+      "</div>";
+  });
+  $$('[data-seg="rate"]').forEach(function(seg){
+    $$("button", seg).forEach(function(btn){
+      btn.classList.toggle("on", parseFloat(btn.getAttribute("data-v")) === rate);
+    });
+  });
+  $$('[data-seg="accent"]').forEach(function(seg){
+    $$("button", seg).forEach(function(btn){
+      btn.classList.toggle("on", btn.getAttribute("data-v") === accent);
+    });
+  });
+}
+
+document.addEventListener("click", function(e){
+  var btn = e.target.closest(".segs button");
+  if(!btn) return;
+  var seg = btn.closest(".segs");
+  var kind = seg.getAttribute("data-seg");
+  var val = btn.getAttribute("data-v");
+  var changedAccent = (kind === "accent" && db.voice.accent !== val);
+  if(kind === "accent") db.voice.accent = val;
+  if(kind === "rate") db.voice.rate = parseFloat(val);
+  saveDB();
+  renderVoiceBars();
+  if(changedAccent) speak("Hello! Let's read together.", null);
+});
+
+function renderSpeakView(){
+  var sel = "";
+  for(var i=0;i<BOOKS.length;i++){
+    var b = BOOKS[i];
+    sel += '<option value="' + esc(b.id) + '"' + (b.id === speakBookId ? " selected" : "") + ">" +
+      esc(b.ko + " · " + b.t) + (b.f ? " (무료 eBook)" : "") + "</option>";
+  }
+  $("#speakBook").innerHTML = sel;
+  var book = bookById(speakBookId) || BOOKS[0];
+  var html = "";
+  for(var j=0;j<book.q.length;j++) html += sentenceHTML(book, j);
+  $("#speakList").innerHTML = html;
+  $("#speakCap").textContent = book.ko + " · " + book.q.length + "문장";
+  renderVoiceBars();
+}
+
+$("#speakBook").addEventListener("change", function(e){
+  speakBookId = e.target.value;
+  renderSpeakView();
+});
+$("#speakList").addEventListener("click", function(e){
+  var sp = e.target.closest("[data-say]");
+  if(sp){
+    var slow = sp.getAttribute("data-slow") === "1";
+    speak(sp.getAttribute("data-say"), slow ? 0.75 : null);
+    return;
+  }
+  var mic = e.target.closest(".mic");
+  if(mic){ startListening(mic.closest(".sent"), mic.getAttribute("data-target")); return; }
+  var rb = e.target.closest(".retry");
+  if(rb){ startListening(rb.closest(".sent"), rb.closest(".sent").querySelector(".mic").getAttribute("data-target")); return; }
+});
+/* sent-fb 내부의 다시/듣기 버튼 */
+document.addEventListener("click", function(e){
+  var sp = e.target.closest(".sent-fb [data-say]");
+  if(sp) speak(sp.getAttribute("data-say"));
+});
+
+/* ============================================================
+   VIEWS / SETTINGS
+   ============================================================ */
+function showView(name){
+  ["library","quiz","speak"].forEach(function(v){
+    var el = $("#view" + v.charAt(0).toUpperCase() + v.slice(1));
+    if(el) el.hidden = (v !== name);
+  });
+  $$(".tabbar button").forEach(function(b){
+    b.classList.toggle("on", b.getAttribute("data-view") === name);
+  });
+  if(name === "quiz" && $("#quizSetup").hidden && $("#quizRun").hidden === false){
+    // 퀴즈 진행 중에는 그대로 유지
+  }
+  if(name === "quiz") renderQuizSetup();
+  if(name === "speak") renderSpeakView();
+  window.scrollTo({top:0, behavior:"instant" in window ? "instant" : "auto"});
+}
+$$(".tabbar button").forEach(function(b){
+  b.addEventListener("click", function(){ showView(b.getAttribute("data-view")); });
+});
+
+$("#btnSettings").addEventListener("click", function(){
+  $("#sheet").hidden = false;
+  renderVoiceBars();
+  $("#capTts").textContent = speechOK ? "지원 ✓" : "지원 안 됨";
+  $("#capStt").textContent = SRClass ? "지원 ✓" : "지원 안 됨";
+  $("#capRec").textContent = recOK ? "지원 ✓" : "지원 안 됨";
+  var main = mainBooks();
+  var done = main.filter(function(b){ return db.books[b.id] && db.books[b.id].d; }).length;
+  var memo = 0;
+  for(var id in db.books){ if(db.books[id] && db.books[id].m) memo++; }
+  $("#capStats").textContent = "30권 중 " + done + "권 완독 · 메모 " + memo + "개 · 퀴즈 최고 " + (db.best || 0) + "%";
+});
+$("#sheet").addEventListener("click", function(e){
+  if(e.target.closest("[data-close]")) $("#sheet").hidden = true;
+});
+$("#btnReset").addEventListener("click", function(){
+  if(!confirm("읽음 표시·별점·메모·퀴즈 최고 점수를 모두 지울까요? 되돌릴 수 없어요.")) return;
+  db.books = {};
+  db.best = 0;
+  saveDB();
+  renderLibrary();
+  $("#capStats").textContent = "기록을 지웠어요.";
+  toast("기록을 지웠어요.");
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderChips();
+renderLibrary();
+renderQuizSetup();
+renderVoiceBars();
+renderSpeakView();
+$("#countPill").textContent = mainBooks().length + "권";
+
+/* iOS 사파리에서 첫 탭에 음성 목록을 미리 불러오기 */
+document.addEventListener("touchstart", function once(){
+  loadVoices();
+  document.removeEventListener("touchstart", once);
+}, {passive:true});
+
+/* ============================================================
+   SELF TEST (?selftest=1)
+   ============================================================ */
+function runSelfTest(){
+  var out = [];
+  function ok(name, cond){ out.push((cond ? "PASS  " : "FAIL  ") + name); }
+  ok("도서 35권", BOOKS.length === 35);
+  ok("본편 30권", mainBooks().length === 30);
+  ok("무료 eBook 8권", freeBooks().length === 8);
+  ok("Stories 6권", booksOfSet("s1").length === 6);
+  ok("More A/B/C 각 6권", booksOfSet("s2").length === 6 && booksOfSet("s3").length === 6 && booksOfSet("s4").length === 6);
+  ok("Decode 6권", booksOfSet("dd").length === 6);
+  ok("추가 무료 5권", booksOfSet("x").length === 5);
+  ok("Stories 읽기 순서 1~6", booksOfSet("s1").map(function(b){return b.order;}).join(",") === "1,2,3,4,5,6");
+  ok("모든 책 문장 3개 이상", BOOKS.every(function(b){ return b.q && b.q.length >= 3; }));
+  ok("모든 책 단어 5개", BOOKS.every(function(b){ return b.v && b.v.length === 5; }));
+  ok("단어 필드 완전", BOOKS.every(function(b){ return b.v.every(function(v){ return v.length === 5 && v.every(function(x){ return typeof x === "string" && x.length > 0; }); }); }));
+  ok("id 중복 없음", (function(){ var s={},d=false; BOOKS.forEach(function(b){ if(s[b.id]) d=true; s[b.id]=1; }); return !d; })());
+  ok("무료 배지 도서 = Scarf/Everyone/Stuck", BOOKS.filter(function(b){ return b.f && b.set !== "x"; }).map(function(b){return b.t;}).sort().join("|") === "Everyone Got Wet|Stuck in the Mud|The Scarf");
+
+  /* 라이브러리 렌더 */
+  ok("카드 30장 이상 렌더", document.querySelectorAll("#list .card").length >= 30);
+  ok("단어 듣기 버튼 존재", document.querySelectorAll("#list .v-speak").length >= 150);
+  ok("문장 행 존재", document.querySelectorAll("#list .sent").length >= 90);
+
+  /* 퀴즈 생성 */
+  ["all","s1","s2","s3","s4","dd","free","x"].forEach(function(sc){
+    var pool = entriesOf(poolFor(sc));
+    var qs = makeQuestions(pool, 10, "mix");
+    ok("퀴즈[" + sc + "] 생성", qs.length > 0);
+    ok("퀴즈[" + sc + "] 보기 4개·정답 포함", qs.every(function(q){ return q.options.length === 4 && q.options.filter(function(o){ return o === q.answer; }).length === 1; }));
+    ok("퀴즈[" + sc + "] 보기 중복 없음", qs.every(function(q){ return (new Set(q.options)).size === 4; }));
+  });
+  BOOKS.forEach(function(b){
+    var qs = makeQuestions(entriesOf([b]), 10, "mix");
+    if(!qs.length || qs.every(function(q){ return q.options.length !== 4; })) out.push("FAIL  개별 퀴즈 " + b.id);
+  });
+  ok("개별 도서 퀴즈 전권 생성", out.filter(function(l){ return l.indexOf("FAIL  개별 퀴즈") === 0; }).length === 0);
+
+  /* 채점 로직 */
+  var m1 = align(normWords("This house is for sale"), normWords("this house is four sale")).matched;
+  ok("정렬: 맞은 단어 표시", m1[0] === true && m1[1] === true && m1[2] === true && m1[3] === false && m1[4] === true);
+  ok("정렬: 완전 일치", align(normWords("a b c"), normWords("a b c")).matched.every(Boolean));
+  ok("정렬: 쌍 반환", align(normWords("a b"), normWords("a x b")).pairs.length === 2);
+  ok("점수 계산", scoreOf(4, 3) === 75 && scoreOf(0,0) === 0);
+  var mk = markSentence("This house is for sale.", "this house is four");
+  ok("문장 채점 hit 3", mk.hits === 3);
+  ok("near/miss 색상 클래스", /class="near"|class="miss"/.test(mk.html));
+  ok("유사어 판정", similar("four","for") === true && similar("house","hippo") === false);
+
+  /* 음성 기능 플래그 */
+  ok("TTS 플래그 정의", typeof speechOK === "boolean");
+  ok("STT 클래스 감지", SRClass === null || typeof SRClass === "function");
+  ok("speak 함수 존재", typeof speak === "function");
+  ok("음성 설정 저장값", db.voice.accent === "en-GB" || db.voice.accent === "en-US");
+  ok("localStorage 저장 가능", (function(){ try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); return true; }catch(e){ return false; } })());
+
+  var el = document.getElementById("selftest");
+  el.hidden = false;
+  el.textContent = "SELF TEST — " + out.filter(function(l){ return l.indexOf("PASS") === 0; }).length + " pass / " +
+    out.filter(function(l){ return l.indexOf("FAIL") === 0; }).length + " fail\n\n" + out.join("\n");
+  console.log(out.join("\n"));
+}
+if(location.search.indexOf("selftest") !== -1){
+  setTimeout(runSelfTest, 200);
+}
+</script>
+</body>
+</html>
