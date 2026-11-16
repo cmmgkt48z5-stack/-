@@ -273,6 +273,81 @@ h1,h2,h3,p,ul,ol{margin:0}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 #selftest{position:fixed;left:0;top:0;right:0;max-height:60vh;overflow:auto;background:#fff;color:#111;font:11px/1.4 monospace;padding:10px;z-index:999;border-bottom:2px solid #333;white-space:pre-wrap}
 .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13.5px}
+
+/* ---------- library: read button / add book ---------- */
+.addbook{
+  width:100%;margin-top:9px;border:1.5px dashed #bdd3c8;background:#f3f8f5;color:var(--green);
+  border-radius:12px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;
+}
+.addbook:active{transform:scale(.995)}
+.read-btn{
+  width:100%;margin-top:12px;border:1.5px solid #cfe0d6;background:var(--green-soft);color:var(--green-dark);
+  border-radius:11px;padding:12px;font-size:13.5px;font-weight:800;cursor:pointer;
+}
+.read-btn.has{border-color:var(--green);background:var(--green);color:#fff}
+.read-btn:active{transform:scale(.995)}
+.edit-btn{width:100%;margin-top:7px;padding:9px;font-size:12px}
+
+/* ---------- page reader ---------- */
+.reader{
+  position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;background:#fbf7ee;
+  padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);
+}
+.rd-head{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);background:#fffdf8}
+.rd-titles{flex:1;min-width:0}
+.rd-titles h2{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.rd-titles p{font-size:11.5px;color:var(--muted);margin-top:1px}
+.rd-icon{border:1px solid var(--line);background:#fff;width:38px;height:38px;border-radius:11px;font-size:15px;line-height:1;cursor:pointer;flex:0 0 auto}
+.rd-icon:active{transform:scale(.94)}
+.rd-stage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 6px;display:flex;align-items:flex-start;justify-content:center}
+.rd-page{
+  width:100%;max-width:640px;background:#fffdf8;border:1px solid #eadfc9;border-radius:16px;
+  box-shadow:0 24px 50px -40px rgba(34,31,26,.8);padding:18px 18px 22px;min-height:220px;
+}
+.rd-img{margin:0 0 14px;border-radius:12px;overflow:hidden;background:#f1ead9;border:1px solid #efe6d3}
+.rd-img img{display:block;width:100%;height:auto}
+.rd-text{font-size:20px;line-height:1.75;color:#241f18;letter-spacing:.005em;font-weight:600;word-break:break-word}
+.rd-text.with-img{font-size:17px;line-height:1.7}
+.rd-line{display:block;border-radius:6px;padding:1px 2px;transition:background .15s}
+.rd-line.on{background:#ffeab5}
+.rd-empty{font-size:13.5px;color:#a09a8c;font-weight:500}
+.rd-done{padding:2px 12px 8px}
+.rd-done .cta{margin-top:0;padding:13px;font-size:14.5px}
+.rd-done .cta.on{background:#fff;color:var(--green);border:1.5px solid var(--green);box-shadow:none}
+.rd-foot{display:flex;align-items:center;gap:8px;padding:8px 12px 2px}
+.rd-nav{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:#4e4a40;border-radius:11px;padding:11px 14px;font-size:13.5px;font-weight:700;cursor:pointer}
+.rd-nav:active{transform:scale(.97)}
+.rd-nav:disabled{opacity:.38}
+.rd-dots{flex:1;text-align:center;font-size:12px;font-weight:800;color:var(--green-dark);letter-spacing:.02em}
+.rd-learn{display:flex;flex-wrap:wrap;gap:7px;padding:8px 12px 10px}
+.rd-learn .mini{flex:1 1 auto;padding:10px 8px;font-size:12px;text-align:center}
+.rd-learn .mini:disabled{opacity:.45}
+.rd-learn .mini.playing{background:var(--green);border-color:var(--green);color:#fff;animation:pulse 1.2s infinite}
+.rd-sent{padding:0 12px 12px;max-height:42vh;overflow:auto}
+.rd-sent .sent{margin:0;background:#fffdf8}
+
+/* photo thumbnails */
+.ed-thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:10px}
+.th{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.th img,.th .th-miss{display:block;width:100%;height:74px;object-fit:cover}
+.th-miss{display:flex;align-items:center;justify-content:center;color:#bbb3a2;font-size:20px;background:#f7f3ea}
+.th-n{position:absolute;left:4px;bottom:4px;background:rgba(34,31,26,.72);color:#fff;font-size:10px;font-weight:700;border-radius:6px;padding:1px 5px}
+.th-x{position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(34,31,26,.66);color:#fff;font-size:11px;line-height:1;cursor:pointer}
+.ed-area{
+  width:100%;min-height:170px;margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:11px 12px;
+  font:inherit;font-size:14px;line-height:1.6;color:var(--ink);background:#fff;outline:none;resize:vertical;
+}
+.ed-area:focus{border-color:#bcd3c7;box-shadow:0 0 0 3px rgba(31,111,92,.08)}
+.ed-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.ed-toggle{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#5b6a61}
+.ed-toggle input{width:16px;height:16px}
+.ed-count{margin-left:auto;font-size:12px;font-weight:800;color:var(--green)}
+.ed-photo{
+  display:inline-flex;align-items:center;gap:6px;border:1.5px dashed #cfe0d6;background:#fff;color:var(--green);
+  border-radius:11px;padding:9px 12px;font-size:12.5px;font-weight:700;cursor:pointer;
+}
+.ed-hint{font-size:11.5px;color:var(--muted)}
+#editor{z-index:90}
 </style>
 </head>
 <body>
@@ -306,6 +381,7 @@ h1,h2,h3,p,ul,ol{margin:0}
         <span class="count" id="countPill">30</span>
       </div>
       <div class="chips" id="chips"></div>
+      <button class="addbook" id="btnAddBook">＋ 내 책 직접 추가</button>
     </div>
     <div id="list" class="list"></div>
 
@@ -427,6 +503,62 @@ h1,h2,h3,p,ul,ol{margin:0}
       <button class="danger" id="btnReset">읽음·별점·메모 기록 지우기</button>
     </div>
     <p class="foot" style="padding:12px 0 0">기록은 이 브라우저(localStorage)에만 저장됩니다. 파일을 옮기거나 브라우저 데이터를 지우면 함께 사라져요.</p>
+  </div>
+</div>
+
+<!-- ================= PAGE READER ================= -->
+<div class="reader" id="reader" hidden>
+  <div class="rd-head">
+    <button class="rd-icon" id="rdClose" aria-label="책 닫기">✕</button>
+    <div class="rd-titles"><h2 id="rdTitle">책 제목</h2><p id="rdSub">1 / 1 쪽</p></div>
+    <button class="rd-icon" id="rdEdit" aria-label="본문 수정">✏️</button>
+  </div>
+  <div class="rd-stage" id="rdStage">
+    <div class="rd-page" id="rdPage">
+      <div class="rd-img" id="rdImg" hidden><img id="rdImgEl" alt="이 페이지 사진"></div>
+      <div class="rd-text" id="rdText"></div>
+    </div>
+  </div>
+  <div class="rd-done" id="rdDone" hidden><button class="cta" id="rdFinish">✅ 이 책 완독 체크하기</button></div>
+  <div class="rd-foot">
+    <button class="rd-nav" id="rdPrev">◀ 이전</button>
+    <span class="rd-dots" id="rdDots">1 / 1</span>
+    <button class="rd-nav" id="rdNext">다음 ▶</button>
+  </div>
+  <div class="rd-learn">
+    <button class="mini" id="rdListen">🔊 이 페이지 듣기</button>
+    <button class="mini" id="rdSlow">🐢 천천히</button>
+    <button class="mini" id="rdSpeakBtn">🎤 따라 말하기</button>
+  </div>
+  <div class="rd-sent" id="rdSpeakRow" hidden>
+    <div class="sent" id="rdSent">
+      <p class="sent-en" id="rdSentText"></p>
+      <div class="sent-actions"><button class="mini mic" id="rdMic">🎤 이 페이지 따라 말하기</button></div>
+      <div class="sent-fb" hidden></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 본문/사진 입력 ================= -->
+<div class="sheet" id="editor" hidden>
+  <div class="sheet-bg" data-edclose="1"></div>
+  <div class="sheet-in">
+    <div class="sheet-head"><h2 id="edTitle">📖 본문 넣기</h2><button class="close" data-edclose="1">✕</button></div>
+    <p class="cap">영어 본문을 붙여넣으면 <b>빈 줄(엔터 두 번)</b> 또는 <b>---</b> 기준으로 페이지가 나뉘어요. 사진만 넣어도 한 장씩 넘겨 볼 수 있어요.</p>
+    <div id="edNameBox" hidden><input class="memo" id="edName" placeholder="책 제목 (예: My First Reading)" maxlength="60"></div>
+    <textarea class="ed-area" id="edText" placeholder="This is page one.&#10;&#10;This is page two.&#10;&#10;---&#10;This is page three."></textarea>
+    <div class="ed-row">
+      <label class="ed-toggle"><input type="checkbox" id="edLine"> 줄바꿈마다 1페이지로 나누기</label>
+      <span class="ed-count" id="edCount">0쪽</span>
+    </div>
+    <div class="ed-row">
+      <label class="ed-photo">📷 사진 넣기 (여러 장)<input type="file" id="edFiles" accept="image/*" multiple style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"></label>
+      <span class="ed-hint" id="edPhotoHint">사진 0장</span>
+    </div>
+    <div class="ed-thumbs" id="edThumbs"></div>
+    <button class="cta" id="edSave">저장하고 책 펼치기</button>
+    <button class="cta alt" id="edDel" hidden>본문·사진 지우기</button>
+    <p class="cap">본문은 이 폰 브라우저(localStorage), 사진은 이 폰의 IndexedDB에만 저장돼요. 서버나 GitHub로는 전혀 보내지 않아요.</p>
   </div>
 </div>
 
@@ -768,7 +900,7 @@ var BOOKS = [
    STORAGE / STATE
    ============================================================ */
 var LS_KEY = "ort4-app-v1";
-var db = {books:{}, voice:{accent:"en-GB", rate:1}, best:0};
+var db = {books:{}, voice:{accent:"en-GB", rate:1}, best:0, read:{}, my:[]};
 try{
   var raw = localStorage.getItem(LS_KEY);
   if(raw){
@@ -777,9 +909,11 @@ try{
       db.books = parsed.books || {};
       db.voice = Object.assign({accent:"en-GB", rate:1}, parsed.voice || {});
       db.best = parsed.best || 0;
+      db.read = (parsed.read && typeof parsed.read === "object") ? parsed.read : {};
+      db.my = Array.isArray(parsed.my) ? parsed.my : [];
     }
   }
-}catch(e){ db = {books:{}, voice:{accent:"en-GB", rate:1}, best:0}; }
+}catch(e){ db = {books:{}, voice:{accent:"en-GB", rate:1}, best:0, read:{}, my:[]}; }
 
 function saveDB(){
   try{ localStorage.setItem(LS_KEY, JSON.stringify(db)); }catch(e){}
@@ -811,7 +945,7 @@ function toast(msg){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 1900);
 }
-function mainBooks(){ return BOOKS.filter(function(b){ return b.set !== "x"; }); }
+function mainBooks(){ return BOOKS.filter(function(b){ return b.set !== "x" && b.set !== "my"; }); }
 function freeBooks(){ return BOOKS.filter(function(b){ return b.f; }); }
 function booksOfSet(set){ return BOOKS.filter(function(b){ return b.set === set; }); }
 function bookById(id){
@@ -856,18 +990,24 @@ function speak(text, rateOverride){
   var synth = window.speechSynthesis;
   try{
     if(synth.speaking || synth.pending){ synth.cancel(); }
-    var u = new SpeechSynthesisUtterance(String(text));
-    var lang = db.voice.accent || "en-GB";
-    u.lang = lang;
-    u.rate = rateOverride || db.voice.rate || 1;
-    u.pitch = 1;
-    var v = pickVoice(lang);
-    if(v) u.voice = v;
-    u.onerror = function(){ /* 조용히 무시 — iOS에서 자주 나는 interrupted 오류 */ };
+    var u = makeUtterance(text, rateOverride);
     synth.speak(u);
   }catch(e){
     toast("소리를 재생하지 못했어요. 다시 눌러 주세요.");
   }
+}
+
+/* 현재 설정(영국/미국 · 속도)을 그대로 따른 발화 객체 */
+function makeUtterance(text, rateOverride){
+  var u = new SpeechSynthesisUtterance(String(text));
+  var lang = db.voice.accent || "en-GB";
+  u.lang = lang;
+  u.rate = rateOverride || db.voice.rate || 1;
+  u.pitch = 1;
+  var v = pickVoice(lang);
+  if(v) u.voice = v;
+  u.onerror = function(){ /* 조용히 무시 — iOS에서 자주 나는 interrupted 오류 */ };
+  return u;
 }
 
 /* ============================================================
@@ -1004,7 +1144,8 @@ function renderChips(){
 
 function metaHTML(b){
   var bits = [];
-  if(b.set === "x"){ bits.push("Oxford Level 4"); }
+  if(b.set === "my"){ bits.push("내가 추가한 책"); }
+  else if(b.set === "x"){ bits.push("Oxford Level 4"); }
   else { bits.push(SETS[b.set].name); }
   if(b.w) bits.push("약 " + b.w + "단어");
   if(b.p) bits.push(b.p + "쪽");
@@ -1066,6 +1207,14 @@ function cardHTML(b){
   h += '<button class="done-btn' + (st.d ? " on" : "") + '" data-done="' + esc(b.id) + '" aria-label="읽음 완료">' + (st.d ? "✓" : "") + "</button>";
   h += "</div>";
   h += '<div class="card-body"' + (open ? "" : " hidden") + ">";
+  h += '<button class="read-btn' + (pageCountOf(b.id) > 0 ? " has" : "") + '" data-read="' + esc(b.id) + '">' + esc(readBtnLabel(b.id)) + "</button>";
+  if(b.set === "my"){
+    h += '<p class="sec-note" style="margin:8px 0 0">' + pageCountOf(b.id) + '쪽 · 제목과 본문은 언제든 고칠 수 있어요.</p>';
+    h += '<button class="mini ghost edit-btn" data-editbook="' + esc(b.id) + '">✏️ 본문·사진 편집</button>';
+    h += '<p class="note">본문과 사진은 이 폰 브라우저에만 저장돼요. 서버나 GitHub로 보내지 않아요.</p>';
+    h += "</div></article>";
+    return h;
+  }
   h += '<p class="summary">' + esc(b.s) + "</p>";
   h += '<div class="block-title"><span>📌 핵심 단어 ' + b.v.length + "개</span><span class=\"hint\">단어를 누르면 뜻</span></div>";
   h += vocabHTML(b);
@@ -1084,9 +1233,11 @@ function cardHTML(b){
 function matchesQuery(b){
   if(!query) return true;
   var q = query.toLowerCase();
-  var hay = b.t + " " + b.ko + " " + SETS[b.set].name;
+  var setName = SETS[b.set] ? SETS[b.set].name : (b.set === "my" ? "내 책" : "");
+  var hay = b.t + " " + b.ko + " " + setName;
   for(var i=0;i<b.v.length;i++) hay += " " + b.v[i][0] + " " + b.v[i][3];
   for(var j=0;j<b.q.length;j++) hay += " " + b.q[j];
+  if(b.set === "my"){ var rc = readRec(b.id); hay += " " + (rc.t || ""); }
   return hay.toLowerCase().indexOf(q) !== -1;
 }
 
@@ -1112,6 +1263,9 @@ function renderLibrary(){
   } else {
     html += sectionHTML(SETS[filter].name, booksOfSet(filter), SETS[filter].note);
   }
+  if(filter === "all"){
+    html = sectionHTML("내가 추가한 책", myBookObjects(), "직접 넣은 본문·사진으로 만든 책이에요. 한 장씩 넘기며 듣고 따라 말할 수 있어요.") + html;
+  }
   if(!html) html = '<p class="empty">검색 결과가 없어요. 다른 단어로 찾아보세요.</p>';
   $("#list").innerHTML = html;
   var shown = $$("#list .card").length;
@@ -1134,6 +1288,10 @@ $("#q").addEventListener("input", function(e){
   renderLibrary();
 });
 $("#list").addEventListener("click", function(e){
+  var rd = e.target.closest("[data-read]");
+  if(rd){ e.stopPropagation(); openReader(rd.getAttribute("data-read")); return; }
+  var eb = e.target.closest("[data-editbook]");
+  if(eb){ e.stopPropagation(); openEditor(eb.getAttribute("data-editbook"), false); return; }
   var sp = e.target.closest("[data-say]");
   if(sp){
     e.stopPropagation();
@@ -1736,6 +1894,583 @@ document.addEventListener("click", function(e){
 });
 
 /* ============================================================
+   PAGE READER — 본문/사진 저장 + 한 장씩 넘기며 읽기
+   ============================================================ */
+var RD_MAX_PHOTOS = 60;
+var IDB_NAME = "ort4-reader", IDB_STORE = "pages";
+var idbDb = null, idbOpening = false, idbFailed = false, idbWaiters = [];
+var imgMap = {}, imgReady = {};
+
+function ensureRead(){
+  if(!db.read || typeof db.read !== "object") db.read = {};
+  if(!Array.isArray(db.my)) db.my = [];
+}
+function readRec(id){
+  ensureRead();
+  var r = db.read[id];
+  if(!r || typeof r !== "object"){ r = {}; db.read[id] = r; }
+  if(typeof r.t !== "string") r.t = "";
+  if(r.m !== "line") r.m = "blank";
+  if(typeof r.pos !== "number") r.pos = 0;
+  if(!Array.isArray(r.imgs)) r.imgs = [];
+  return r;
+}
+function myRec(id){
+  ensureRead();
+  for(var i=0;i<db.my.length;i++){ if(db.my[i] && db.my[i].id === id) return db.my[i]; }
+  return null;
+}
+function titleOf(id){
+  var m = myRec(id);
+  if(m) return m.title || "내 책";
+  var b = bookById(id);
+  return b ? b.t : "내 책";
+}
+/* 빈 줄(엔터 두 번) 또는 --- 기준으로 페이지 나누기 */
+function splitPages(text, byLine){
+  var s = String(text == null ? "" : text).replace(/\r\n?/g, "\n");
+  var out = [], i;
+  if(byLine){
+    var lines = s.split("\n");
+    for(i=0;i<lines.length;i++){ var ln = lines[i].trim(); if(ln) out.push(ln); }
+    return out;
+  }
+  s = s.replace(/^[ \t]*-{3,}[ \t]*$/gm, "\n\n");
+  var parts = s.split(/\n{2,}/);
+  for(i=0;i<parts.length;i++){ var p = parts[i].trim(); if(p) out.push(p); }
+  return out;
+}
+function pageLines(text){
+  var s = String(text == null ? "" : text).replace(/\r\n?/g, "\n");
+  var out = [], raw = s.split("\n");
+  for(var i=0;i<raw.length;i++){ var ln = raw[i].trim(); if(ln) out.push(ln); }
+  return out;
+}
+function pageCountOf(id){
+  var rec = readRec(id);
+  var n = splitPages(rec.t, rec.m === "line").length;
+  var maxImg = -1;
+  for(var i=0;i<rec.imgs.length;i++){
+    var pg = parseInt(rec.imgs[i], 10);
+    if(!isNaN(pg) && pg > maxImg) maxImg = pg;
+  }
+  return Math.max(n, maxImg + 1);
+}
+function readBtnLabel(id){
+  var n = pageCountOf(id);
+  if(n > 0) return "📖 책 읽기 (" + n + "쪽)";
+  return "📖 본문 넣기 / 책 보기";
+}
+function myBookObjects(){
+  ensureRead();
+  var out = [];
+  for(var i=0;i<db.my.length;i++){
+    var m = db.my[i];
+    if(!m || !m.id) continue;
+    out.push({id:m.id, t:m.title || "내 책", ko:"내가 만든 책 " + pageCountOf(m.id) + "쪽",
+      set:"my", order:0, w:0, p:0, f:false, s:"", v:[], q:[]});
+  }
+  return out;
+}
+
+/* ---------- IndexedDB (사진은 이 폰 안에만) ---------- */
+function idbFlush(){
+  var q = idbWaiters; idbWaiters = [];
+  for(var i=0;i<q.length;i++){ try{ q[i](idbDb); }catch(e){} }
+}
+function idbInit(cb){
+  if(cb) idbWaiters.push(cb);
+  if(!idbOpening && (idbDb || idbFailed)){ idbFlush(); return; }
+  if(idbOpening) return;
+  idbOpening = true;
+  function done(d, failed){
+    idbDb = d;
+    idbFailed = !!failed;
+    idbOpening = false;
+    idbFlush();
+  }
+  try{
+    if(typeof window === "undefined" || !window.indexedDB){ done(null, true); return; }
+    var req = window.indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = function(e){
+      try{
+        var d = (e && e.target && e.target.result) || req.result;
+        if(d && !d.objectStoreNames.contains(IDB_STORE)) d.createObjectStore(IDB_STORE, {keyPath:"k"});
+      }catch(err){}
+    };
+    req.onsuccess = function(){ done(req.result, false); };
+    req.onerror = function(){ done(null, true); };
+    req.onblocked = function(){ done(null, true); };
+  }catch(e){ done(null, true); }
+}
+function idbDo(mode, fn, cb){
+  idbInit(function(d){
+    if(!d){ if(cb) cb(null, false); return; }
+    try{
+      var tx = d.transaction(IDB_STORE, mode);
+      var req = fn(tx.objectStore(IDB_STORE));
+      if(!req){ if(cb) cb(null, false); return; }
+      req.onsuccess = function(){ if(cb) cb(req.result, true); };
+      req.onerror = function(){ if(cb) cb(null, false); };
+    }catch(e){ if(cb) cb(null, false); }
+  });
+}
+function imgKey(id, page){ return id + "::" + page; }
+function loadImages(id, cb){
+  if(imgReady[id]){ if(cb) cb(); return; }
+  if(!imgMap[id]) imgMap[id] = {};
+  var range = null;
+  try{
+    if(window.IDBKeyRange && window.IDBKeyRange.bound) range = window.IDBKeyRange.bound(id + "::", id + "::\uffff");
+  }catch(e){ range = null; }
+  idbDo("readonly", function(st){ return st.getAll(range); }, function(rows, ok){
+    if(rows && rows.length){
+      for(var i=0;i<rows.length;i++){
+        var r = rows[i];
+        if(!r || r.book !== id || typeof r.url !== "string") continue;
+        imgMap[id][r.page] = r.url;
+      }
+    }
+    if(ok) imgReady[id] = 1;
+    if(cb) cb();
+  });
+}
+function runTasks(tasks, cb){
+  var i = 0, ok = true;
+  (function next(){
+    if(i >= tasks.length){ if(cb) cb(ok); return; }
+    var t = tasks[i++];
+    try{ t(function(r){ if(r === false) ok = false; next(); }); }
+    catch(e){ ok = false; next(); }
+  })();
+}
+
+/* ---------- 리더 ---------- */
+var reader = {id:null, idx:0, pages:[], speaking:false, token:0};
+
+function buildPages(id){
+  var rec = readRec(id);
+  var texts = splitPages(rec.t, rec.m === "line");
+  var count = pageCountOf(id);
+  var out = [];
+  for(var i=0;i<count;i++){
+    out.push({text: texts[i] || "", img: (imgMap[id] && imgMap[id][i]) || null});
+  }
+  return out;
+}
+function openReader(id, startPage){
+  if(!id) return;
+  if(pageCountOf(id) <= 0){ openEditor(id, false); return; }
+  reader.id = id;
+  reader.pages = buildPages(id);
+  var rec = readRec(id);
+  var pos = (typeof startPage === "number") ? startPage : (rec.pos || 0);
+  if(!(pos >= 0)) pos = 0;
+  if(pos > reader.pages.length - 1) pos = reader.pages.length - 1;
+  reader.idx = pos;
+  $("#reader").hidden = false;
+  try{ document.body.style.overflow = "hidden"; }catch(e){}
+  renderReader();
+  loadImages(id, function(){ if(reader.id === id) renderReader(); });
+}
+function renderReader(){
+  var id = reader.id;
+  if(!id) return;
+  reader.pages = buildPages(id);
+  var count = reader.pages.length;
+  if(count < 1) count = 1;
+  if(reader.idx > count - 1) reader.idx = count - 1;
+  if(reader.idx < 0) reader.idx = 0;
+  var page = reader.pages[reader.idx] || {text:"", img:null};
+  var st = bookState(id);
+  $("#rdTitle").textContent = titleOf(id);
+  $("#rdSub").textContent = (reader.idx + 1) + " / " + count + " 쪽";
+  $("#rdDots").textContent = (reader.idx + 1) + " / " + count;
+  var imgWrap = $("#rdImg"), imgEl = $("#rdImgEl"), txt = $("#rdText");
+  if(page.img){ imgEl.setAttribute("src", page.img); imgWrap.hidden = false; txt.classList.add("with-img"); }
+  else { imgEl.removeAttribute("src"); imgWrap.hidden = true; txt.classList.remove("with-img"); }
+  var lines = pageLines(page.text);
+  var html = "";
+  for(var i=0;i<lines.length;i++) html += '<span class="rd-line" data-li="' + i + '">' + esc(lines[i]) + "</span>";
+  if(!html) html = '<span class="rd-empty">' + (page.img ? "사진만 있는 페이지예요." : "이 페이지는 비어 있어요. ✏️로 본문을 넣어 보세요.") + "</span>";
+  txt.innerHTML = html;
+  $("#rdPrev").disabled = reader.idx <= 0;
+  $("#rdNext").disabled = reader.idx >= count - 1;
+  var hasText = lines.length > 0;
+  $("#rdListen").disabled = !hasText;
+  $("#rdSlow").disabled = !hasText;
+  $("#rdSpeakBtn").disabled = !hasText;
+  $("#rdDone").hidden = !(reader.idx >= count - 1);
+  var fin = $("#rdFinish");
+  fin.textContent = st.d ? "✓ 완독 완료 · 다시 누르면 해제" : "✅ 이 책 완독 체크하기";
+  fin.classList.toggle("on", !!st.d);
+  if(!hasText){ $("#rdSpeakRow").hidden = true; }
+  else { $("#rdSentText").textContent = lines.join(" "); }
+  var r = readRec(id);
+  if(r.pos !== reader.idx){ r.pos = reader.idx; saveDB(); }
+}
+function readerGo(delta){
+  if(!reader.id) return;
+  var n = reader.idx + delta;
+  if(n < 0 || n > reader.pages.length - 1) return;
+  stopPageSpeech();
+  var fb = $("#rdSent .sent-fb");
+  if(fb){ fb.innerHTML = ""; fb.hidden = true; }
+  $("#rdSpeakRow").hidden = true;
+  reader.idx = n;
+  renderReader();
+  var stg = $("#rdStage");
+  try{ if(stg && stg.scrollTo) stg.scrollTo(0, 0); }catch(e){}
+}
+function closeReader(){
+  if(!reader.id) return;
+  stopPageSpeech();
+  reader.id = null;
+  reader.pages = [];
+  $("#reader").hidden = true;
+  $("#rdSpeakRow").hidden = true;
+  try{ document.body.style.overflow = ""; }catch(e){}
+  renderLibrary();
+}
+function stopPageSpeech(){
+  reader.token++;
+  reader.speaking = false;
+  var b1 = $("#rdListen"), b2 = $("#rdSlow");
+  if(b1) b1.classList.remove("playing");
+  if(b2) b2.classList.remove("playing");
+  $$("#rdText .rd-line").forEach(function(el){ el.classList.remove("on"); });
+  try{ if(speechOK) window.speechSynthesis.cancel(); }catch(e){}
+}
+function readPage(slow){
+  if(!speechOK){ toast("이 브라우저는 음성 읽기를 지원하지 않아요."); return; }
+  if(reader.speaking){ stopPageSpeech(); return; }
+  var page = reader.pages[reader.idx] || {text:""};
+  var lines = pageLines(page.text);
+  if(!lines.length){ toast("이 페이지에는 읽을 글이 없어요."); return; }
+  var btn = slow ? $("#rdSlow") : $("#rdListen");
+  var token = ++reader.token;
+  reader.speaking = true;
+  if(btn) btn.classList.add("playing");
+  var nodes = $$("#rdText .rd-line");
+  var rate = slow ? 0.75 : (db.voice.rate || 1);
+  var i = 0;
+  function finish(){
+    if(token !== reader.token) return;
+    reader.speaking = false;
+    if(btn) btn.classList.remove("playing");
+    nodes.forEach(function(el){ el.classList.remove("on"); });
+  }
+  function step(){
+    if(token !== reader.token) return;
+    if(i >= lines.length){ finish(); return; }
+    var cur = i++;
+    nodes.forEach(function(el, k){ el.classList.toggle("on", k === cur); });
+    var u = makeUtterance(lines[cur], rate);
+    var advanced = false;
+    var go = function(){ if(advanced) return; advanced = true; step(); };
+    u.onend = go;
+    u.onerror = go;
+    try{ window.speechSynthesis.speak(u); }catch(e){ finish(); }
+  }
+  try{ window.speechSynthesis.cancel(); }catch(e){}
+  step();
+}
+function toggleReaderDone(){
+  var id = reader.id;
+  if(!id) return;
+  var st = bookState(id);
+  st.d = !st.d;
+  saveDB();
+  renderReader();
+  renderProgress();
+  toast(st.d ? "완독 체크! ✓" : "완독 체크를 해제했어요.");
+}
+
+/* ---------- 본문·사진 입력 ---------- */
+var editor = {id:null, isNew:false, photos:[], removed:[]};
+
+function openEditor(id, isNew){
+  ensureRead();
+  if(isNew || !id){
+    editor.id = "my-" + Date.now().toString(36) + "-" + Math.floor(Math.random() * 900 + 100);
+    editor.isNew = true;
+  } else {
+    editor.id = id;
+    editor.isNew = false;
+  }
+  editor.photos = [];
+  editor.removed = [];
+  var rec = readRec(editor.id);
+  $("#edTitle").textContent = editor.isNew ? "📖 내 책 추가" : "📖 본문 넣기";
+  $("#edNameBox").hidden = !editor.isNew;
+  $("#edName").value = editor.isNew ? "" : titleOf(editor.id);
+  $("#edText").value = rec.t || "";
+  $("#edLine").checked = (rec.m === "line");
+  $("#edDel").hidden = editor.isNew;
+  $("#edThumbs").innerHTML = "";
+  $("#edPhotoHint").textContent = "사진 불러오는 중…";
+  $("#editor").hidden = false;
+  var existing = [];
+  for(var i=0;i<rec.imgs.length;i++){
+    var pg = parseInt(rec.imgs[i], 10);
+    if(isNaN(pg)) continue;
+    existing.push({page: pg, url: (imgMap[editor.id] && imgMap[editor.id][pg]) || null, saved: true});
+  }
+  existing.sort(function(a,b){ return a.page - b.page; });
+  editor.photos = existing;
+  renderThumbs();
+  updateEditorCount();
+  loadImages(editor.id, function(){
+    for(var j=0;j<editor.photos.length;j++){
+      var p = editor.photos[j];
+      if(!p.url && imgMap[editor.id]) p.url = imgMap[editor.id][p.page] || null;
+    }
+    renderThumbs();
+  });
+}
+function closeEditor(){
+  $("#editor").hidden = true;
+  editor.id = null;
+  editor.photos = [];
+  editor.removed = [];
+}
+function updateEditorCount(){
+  var byLine = !!$("#edLine").checked;
+  var n = splitPages($("#edText").value || "", byLine).length;
+  var maxImg = -1;
+  for(var i=0;i<editor.photos.length;i++){ if(editor.photos[i].page > maxImg) maxImg = editor.photos[i].page; }
+  var total = Math.max(n, maxImg + 1);
+  $("#edCount").textContent = total + "쪽 (본문 " + n + "쪽 · 사진 " + editor.photos.length + "장)";
+}
+function renderThumbs(){
+  editor.photos.sort(function(a,b){ return a.page - b.page; });
+  var h = "";
+  for(var i=0;i<editor.photos.length;i++){
+    var p = editor.photos[i];
+    h += '<div class="th" data-th="' + i + '">' +
+      (p.url ? '<img src="' + p.url + '" alt="">' : '<div class="th-miss">?</div>') +
+      '<span class="th-n">' + (p.page + 1) + "쪽</span>" +
+      '<button type="button" class="th-x" data-thx="' + i + '" aria-label="사진 지우기">✕</button>' +
+      "</div>";
+  }
+  $("#edThumbs").innerHTML = h;
+  $("#edPhotoHint").textContent = editor.photos.length ? ("사진 " + editor.photos.length + "장 · 1쪽부터 순서대로 나와요") : "사진 0장";
+  updateEditorCount();
+}
+function nextFreePage(){
+  var used = {};
+  for(var i=0;i<editor.photos.length;i++) used[editor.photos[i].page] = 1;
+  var n = 0;
+  while(used[n]) n++;
+  return n;
+}
+function addPhotoUrl(url){
+  if(!url) return;
+  if(editor.photos.length >= RD_MAX_PHOTOS){ toast("사진은 " + RD_MAX_PHOTOS + "장까지 넣을 수 있어요."); return; }
+  editor.photos.push({page: nextFreePage(), url: url, saved: false});
+  renderThumbs();
+}
+function readFileURL(file, cb){
+  try{
+    var FR = (typeof window !== "undefined" && window.FileReader) ? window.FileReader
+      : (typeof FileReader !== "undefined" ? FileReader : null);
+    if(!FR){ cb(null); return; }
+    var fr = new FR();
+    fr.onload = function(){ cb(typeof fr.result === "string" ? fr.result : null); };
+    fr.onerror = function(){ cb(null); };
+    fr.readAsDataURL(file);
+  }catch(e){ cb(null); }
+}
+function shrinkImage(url, cb){
+  var Img = (typeof window !== "undefined" && window.Image) ? window.Image
+    : (typeof Image !== "undefined" ? Image : null);
+  if(!Img || !document.createElement){ cb(url); return; }
+  try{
+    var img = new Img();
+    img.onload = function(){
+      try{
+        var max = 1400, w = img.width || 0, h = img.height || 0;
+        if(!w || !h){ cb(url); return; }
+        if(Math.max(w, h) > max){ var s = max / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); }
+        var c = document.createElement("canvas");
+        c.width = w; c.height = h;
+        var ctx = c.getContext ? c.getContext("2d") : null;
+        if(!ctx){ cb(url); return; }
+        ctx.drawImage(img, 0, 0, w, h);
+        var out = c.toDataURL ? c.toDataURL("image/jpeg", 0.82) : "";
+        cb(out && out.length && out.length < url.length ? out : url);
+      }catch(e){ cb(url); }
+    };
+    img.onerror = function(){ cb(url); };
+    img.src = url;
+  }catch(e){ cb(url); }
+}
+function handlePhotoFiles(files){
+  if(!files || !files.length) return;
+  var list = [];
+  for(var i=0;i<files.length;i++) list.push(files[i]);
+  var idx = 0;
+  (function next(){
+    if(idx >= list.length){ updateEditorCount(); return; }
+    var f = list[idx++];
+    readFileURL(f, function(url){
+      if(!url){ next(); return; }
+      shrinkImage(url, function(out){ addPhotoUrl(out); next(); });
+    });
+  })();
+}
+function saveEditor(){
+  var id = editor.id;
+  if(!id){ closeEditor(); return; }
+  var text = $("#edText").value || "";
+  var byLine = !!$("#edLine").checked;
+  var title = ($("#edName").value || "").trim();
+  if(editor.isNew && !title){ toast("책 제목을 먼저 입력해 주세요."); return; }
+  var photos = editor.photos.slice();
+  var removed = editor.removed.slice();
+  if(!text.trim() && !photos.length){ toast("본문이나 사진을 하나는 넣어 주세요."); return; }
+  var rec = readRec(id);
+  rec.t = text;
+  rec.m = byLine ? "line" : "blank";
+  rec.imgs = [];
+  for(var i=0;i<photos.length;i++) rec.imgs.push(photos[i].page);
+  rec.imgs.sort(function(a,b){ return a - b; });
+  if(myRec(id)) myRec(id).title = title || myRec(id).title;
+  else if(editor.isNew) db.my.push({id: id, title: title, created: Date.now()});
+  saveDB();
+
+  var tasks = [];
+  for(var j=0;j<photos.length;j++){
+    if(!photos[j].url || photos[j].saved) continue;
+    (function(p){
+      var r = {k: imgKey(id, p.page), book: id, page: p.page, url: p.url, ts: Date.now()};
+      tasks.push(function(cb){ idbDo("readwrite", function(st){ return st.put(r); }, function(_res, ok){ cb(ok); }); });
+    })(photos[j]);
+  }
+  for(var k2=0;k2<removed.length;k2++){
+    (function(pg){
+      tasks.push(function(cb){ idbDo("readwrite", function(st){ return st.delete(imgKey(id, pg)); }, function(_res, ok){ cb(ok); }); });
+    })(removed[k2]);
+  }
+  var savedId = id;
+  runTasks(tasks, function(allOk){
+    if(!imgMap[savedId]) imgMap[savedId] = {};
+    for(var m=0;m<photos.length;m++){
+      if(photos[m].url) imgMap[savedId][photos[m].page] = photos[m].url;
+      else if(imgMap[savedId]) delete imgMap[savedId][photos[m].page];
+    }
+    for(var d=0;d<removed.length;d++){ if(imgMap[savedId]) delete imgMap[savedId][removed[d]]; }
+    imgReady[savedId] = 1;
+    closeEditor();
+    renderLibrary();
+    var photoOk = !photos.length || allOk;
+    toast(photoOk ? "저장했어요. 한 장씩 넘겨 읽어 보세요." : "본문은 저장했어요. 이 브라우저에서는 사진 저장이 제한돼요.");
+    openReader(savedId, 0);
+  });
+}
+function deleteBookContent(){
+  var id = editor.id;
+  if(!id) return;
+  var mine = !!myRec(id);
+  var msg = mine ? "이 책을 목록에서 지울까요? 본문과 사진도 함께 지워져요."
+                 : "이 책에 넣은 본문과 사진을 지울까요? 되돌릴 수 없어요.";
+  if(!confirm(msg)) return;
+  var rec = readRec(id);
+  var pages = rec.imgs.slice();
+  rec.t = "";
+  rec.m = "blank";
+  rec.pos = 0;
+  rec.imgs = [];
+  if(mine){
+    var keep = [];
+    for(var i=0;i<db.my.length;i++){ if(db.my[i].id !== id) keep.push(db.my[i]); }
+    db.my = keep;
+  }
+  saveDB();
+  var tasks = [];
+  for(var p=0;p<pages.length;p++){
+    (function(pg){
+      tasks.push(function(cb){ idbDo("readwrite", function(st){ return st.delete(imgKey(id, pg)); }, function(_res, ok){ cb(ok); }); });
+    })(pages[p]);
+  }
+  if(imgMap[id]) delete imgMap[id];
+  if(imgReady[id]) delete imgReady[id];
+  var wasOpen = (reader.id === id);
+  runTasks(tasks, function(){
+    closeEditor();
+    if(wasOpen) closeReader();
+    renderLibrary();
+    toast(mine ? "책을 지웠어요." : "본문과 사진을 지웠어요.");
+  });
+}
+
+/* ---------- 리더/입력 이벤트 ---------- */
+$("#rdClose").addEventListener("click", function(){ closeReader(); });
+$("#rdEdit").addEventListener("click", function(){ if(reader.id) openEditor(reader.id, false); });
+$("#rdPrev").addEventListener("click", function(){ readerGo(-1); });
+$("#rdNext").addEventListener("click", function(){ readerGo(1); });
+$("#rdListen").addEventListener("click", function(){ readPage(false); });
+$("#rdSlow").addEventListener("click", function(){ readPage(true); });
+$("#rdSpeakBtn").addEventListener("click", function(){
+  if(!reader.id) return;
+  var page = reader.pages[reader.idx] || {text:""};
+  var text = pageLines(page.text).join(" ");
+  if(!text){ toast("이 페이지에는 읽을 글이 없어요."); return; }
+  $("#rdSpeakRow").hidden = false;
+  $("#rdSentText").textContent = text;
+  startListening($("#rdSent"), text);
+});
+$("#rdMic").addEventListener("click", function(){
+  if(!reader.id) return;
+  var page = reader.pages[reader.idx] || {text:""};
+  startListening($("#rdSent"), pageLines(page.text).join(" "));
+});
+$("#rdFinish").addEventListener("click", function(){ toggleReaderDone(); });
+
+var rdTouch = {x:0, y:0, t:0};
+$("#rdStage").addEventListener("touchstart", function(e){
+  var t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]);
+  if(!t) return;
+  rdTouch.x = t.clientX; rdTouch.y = t.clientY; rdTouch.t = Date.now();
+}, {passive:true});
+$("#rdStage").addEventListener("touchend", function(e){
+  var t = (e.changedTouches && e.changedTouches[0]) || (e.touches && e.touches[0]);
+  if(!t) return;
+  var dx = t.clientX - rdTouch.x, dy = t.clientY - rdTouch.y;
+  if(Math.abs(dx) < 45) return;
+  if(Math.abs(dx) < Math.abs(dy) * 1.4) return;
+  readerGo(dx < 0 ? 1 : -1);
+});
+
+$("#btnAddBook").addEventListener("click", function(){ openEditor(null, true); });
+$("#edText").addEventListener("input", function(){ updateEditorCount(); });
+$("#edLine").addEventListener("change", function(){ updateEditorCount(); });
+$("#edFiles").addEventListener("change", function(e){
+  handlePhotoFiles(e.target.files);
+  try{ e.target.value = ""; }catch(err){}
+});
+$("#edThumbs").addEventListener("click", function(e){
+  var x = e.target.closest("[data-thx]");
+  if(!x) return;
+  var i = parseInt(x.getAttribute("data-thx"), 10);
+  var p = editor.photos[i];
+  if(!p) return;
+  if(p.saved) editor.removed.push(p.page);
+  editor.photos.splice(i, 1);
+  renderThumbs();
+});
+$("#edSave").addEventListener("click", function(){ saveEditor(); });
+$("#edDel").addEventListener("click", function(){ deleteBookContent(); });
+$("#editor").addEventListener("click", function(e){
+  if(e.target.closest("[data-edclose]")) closeEditor();
+});
+document.addEventListener("keydown", function(e){
+  if(!e || e.key !== "Escape") return;
+  if(!$("#editor").hidden) closeEditor();
+  else if(reader.id) closeReader();
+});
+
+/* ============================================================
    VIEWS / SETTINGS
    ============================================================ */
 function showView(name){
@@ -1767,7 +2502,10 @@ $("#btnSettings").addEventListener("click", function(){
   var done = main.filter(function(b){ return db.books[b.id] && db.books[b.id].d; }).length;
   var memo = 0;
   for(var id in db.books){ if(db.books[id] && db.books[id].m) memo++; }
-  $("#capStats").textContent = "30권 중 " + done + "권 완독 · 메모 " + memo + "개 · 퀴즈 최고 " + (db.best || 0) + "%";
+  var bodyCount = 0, photoCount = 0;
+  for(var rid in db.read){ if(db.read[rid] && pageCountOf(rid) > 0) bodyCount++; if(db.read[rid] && db.read[rid].imgs) photoCount += db.read[rid].imgs.length; }
+  $("#capStats").textContent = "30권 중 " + done + "권 완독 · 메모 " + memo + "개 · 퀴즈 최고 " + (db.best || 0) + "%" +
+    (bodyCount ? " · 본문 " + bodyCount + "권" : "") + (photoCount ? " · 사진 " + photoCount + "장" : "");
 });
 $("#sheet").addEventListener("click", function(e){
   if(e.target.closest("[data-close]")) $("#sheet").hidden = true;
@@ -1854,6 +2592,19 @@ function runSelfTest(){
   ok("speak 함수 존재", typeof speak === "function");
   ok("음성 설정 저장값", db.voice.accent === "en-GB" || db.voice.accent === "en-US");
   ok("localStorage 저장 가능", (function(){ try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); return true; }catch(e){ return false; } })());
+
+  /* 페이지 리더 */
+  ok("본문: 빈 줄 분리", splitPages("A one.\n\nB two.\n\nC three.", false).length === 3);
+  ok("본문: --- 분리", splitPages("A one.\n---\nB two.", false).length === 2);
+  ok("본문: 줄바꿈 분리", splitPages("A one.\nB two.\nC three.", true).length === 3);
+  ok("본문: 빈 입력 0쪽", splitPages("  \n \n", false).length === 0);
+  ok("본문: 한 줄은 1쪽", splitPages("Just one page.", false).length === 1);
+  ok("리더 본문 읽기 줄", pageLines("One.\nTwo.").length === 2);
+  ok("리더 모달 존재", !!document.getElementById("reader") && !!document.getElementById("rdPrev") && !!document.getElementById("rdFinish"));
+  ok("본문 입력 모달 존재", !!document.getElementById("editor") && !!document.getElementById("edFiles"));
+  ok("카드에 책 보기 버튼", document.querySelectorAll("#list [data-read]").length >= 30);
+  ok("내 책 추가 버튼", !!document.getElementById("btnAddBook"));
+  ok("빈 책 라벨", readBtnLabel("__none__") === "📖 본문 넣기 / 책 보기");
 
   var el = document.getElementById("selftest");
   el.hidden = false;
