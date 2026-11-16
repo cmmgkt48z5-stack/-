@@ -1493,8 +1493,8 @@ function stopActiveRec(){
    녹음 중에 모은 음량 샘플로 안전하게 대신한다(폴백).
    ============================================================ */
 var AN_SILENT = 0.0055;     /* 이보다 작은 소리는 무음 (RMS) */
-var AN_VOL_GOOD = 0.035;    /* 충분히 큰 목소리 */
-var AN_VOL_LOW = 0.010;     /* 조금 작은 목소리 */
+var AN_VOL_GOOD = 0.030;    /* 충분히 큰 목소리 */
+var AN_VOL_LOW = 0.009;     /* 조금 작은 목소리 */
 var AN_PACE_MIN = 0.35;     /* 적정 속도: 단어당 0.35초 ~ 0.85초 */
 var AN_PACE_MAX = 0.85;
 var AN_MOD_NOISE = 0.12;    /* 강약 변화가 이보다 적으면 말소리 대신 소음 */
@@ -1650,7 +1650,8 @@ function judgeAudio(st){
   var noise = !noSound && mod > 0 && mod < AN_MOD_NOISE;
   var volume = "silent", pace = "none", secPerWord = 0;
   if(!noSound){
-    volume = avg >= AN_VOL_GOOD ? "good" : (avg >= AN_VOL_LOW ? "low" : "silent");
+    var loud = Math.max(avg, peak * 0.3);
+    volume = loud >= AN_VOL_GOOD ? "good" : (loud >= AN_VOL_LOW ? "low" : "silent");
     if(words){
       secPerWord = speech / words;
       if(secPerWord < AN_PACE_MIN) pace = "fast";
@@ -1662,7 +1663,7 @@ function judgeAudio(st){
   if(!noSound){
     var need = words ? words * AN_PACE_MIN : 0.5;
     var sSpeech = 30 * anClamp(speech / Math.max(0.5, need), 0, 1);
-    var sVol = volume === "good" ? 25 : (volume === "low" ? 25 * anClamp(avg / AN_VOL_GOOD, 0, 1) : 0);
+    var sVol = volume === "good" ? 25 : (volume === "low" ? 25 * anClamp(Math.max(avg, peak * 0.3) / AN_VOL_GOOD, 0, 1) : 0);
     var sPace = 18;
     if(words){
       if(pace === "fast") sPace = 25 * anClamp(secPerWord / AN_PACE_MIN, 0.15, 1);
@@ -1707,12 +1708,16 @@ function paceMessage(p, words){
   return "문장을 끝까지 읽어 보세요.";
 }
 function analysisHead(a){
+  if(a.unknown) return "이 브라우저에서는 소리를 자세히 분석할 수 없어요. 녹음은 저장했으니 직접 들어 보세요.";
   if(a.noSound) return "소리가 거의 들리지 않았어요. 마이크 가까이에서 다시 녹음해 주세요.";
   if(a.noise) return "말소리보다 주변 소음이 크게 섞였어요. 조용한 곳에서 다시 해 보세요.";
+  if(a.volume === "silent") return "소리가 아주 작아요. 마이크 가까이에서 조금 크게 말해 볼까요?";
+  if(a.volume === "low") return "목소리가 조금 작아요. 한 번 더 크게 말해 볼까요?";
+  if(a.pace === "fast") return "좋아요! 다만 조금 빨랐어요. 천천히 또박또박 읽어 볼까요?";
+  if(a.pace === "slow") return "끝까지 들었어요. 문장을 끊지 말고 조금 더 이어서 읽어 볼까요?";
   if(a.score >= 85) return "아주 좋아요! 원어민처럼 자연스러워요 🎉";
   if(a.score >= 70) return "좋아요! 이 정도면 충분히 잘 읽었어요 👍";
-  if(a.score >= 50) return "잘하고 있어요. 조금만 더 또박또박 말해 봐요 💪";
-  return "다시 한 번 천천히 말해 볼까요? 🐢";
+  return "잘하고 있어요. 조금만 더 또박또박 말해 봐요 💪";
 }
 
 /* ---------- 오디오 해석 실패 시: 녹음 중 음량 샘플로 대신 ---------- */
