@@ -229,8 +229,8 @@ h1,h2,h3,p,ul,ol{margin:0}
 
 /* ---------- speak view ---------- */
 .voicebar{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
-.segs{display:flex;background:#fff;border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}
-.segs button{border:0;background:none;border-radius:8px;padding:6px 10px;font-size:11.5px;font-weight:700;color:#7c7568;cursor:pointer;white-space:nowrap}
+.segs{display:flex;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}
+.segs button{flex:1 1 auto;text-align:center;border:0;background:none;border-radius:8px;padding:6px 8px;font-size:11.5px;font-weight:700;color:#7c7568;cursor:pointer;white-space:nowrap}
 .segs button.on{background:var(--green);color:#fff}
 .cap{margin-top:12px;font-size:11.5px;color:#9a9384;line-height:1.55}
 
@@ -488,7 +488,7 @@ h1,h2,h3,p,ul,ol{margin:0}
     <div class="sheet-sec">
       <label>원어민 발음 · 재생 속도</label>
       <div class="voicebar" id="voiceBarSheet"></div>
-      <p class="cap">모든 🔊 버튼(단어·예문·문장)이 이 설정을 따라요. 기기에 설치된 영어 음성을 사용해요.</p>
+      <p class="cap">기본은 0.8×(조금 느리게)예요. 모든 🔊 버튼(단어·예문·문장·페이지)이 이 설정을 따라요. 기기에 설치된 영어 음성을 사용해요.</p>
     </div>
 
     <div class="sheet-sec">
@@ -496,6 +496,7 @@ h1,h2,h3,p,ul,ol{margin:0}
       <div class="cap-line"><span>문장 읽어 주기 (TTS)</span><b id="capTts">확인 중…</b></div>
       <div class="cap-line"><span>발음 인식 (STT)</span><b id="capStt">확인 중…</b></div>
       <div class="cap-line"><span>녹음 (MediaRecorder)</span><b id="capRec">확인 중…</b></div>
+      <p class="cap" id="capMicTip" hidden></p>
     </div>
 
     <div class="sheet-sec">
@@ -898,23 +899,54 @@ var BOOKS = [
 ];
 
 /* ============================================================
+   읽기 속도(TTS rate) 기준값
+   ------------------------------------------------------------
+   iOS 영어 원어민 음성은 1.0 이 학습자에게 너무 빠르다.
+   보통 = 0.8, 천천히 = 0.65, 아주 천천히 = 0.55
+   ============================================================ */
+var RATE_STD = 0.8;
+var RATE_SLOW = 0.65;
+var RATE_VERY_SLOW = 0.55;
+var RATE_PRESETS = [
+  {v:RATE_VERY_SLOW, label:"0.55× 아주 천천히"},
+  {v:RATE_SLOW, label:"0.65× 천천히"},
+  {v:RATE_STD, label:"0.8× 보통"}
+];
+/* 예전 저장값(1, 0.75)도 새 기준값으로 옮겨 준다 */
+function normalizeRate(r){
+  var n = parseFloat(r);
+  if(isNaN(n)) return RATE_STD;
+  for(var i=0;i<RATE_PRESETS.length;i++){
+    if(Math.abs(RATE_PRESETS[i].v - n) < 0.001) return RATE_PRESETS[i].v;
+  }
+  if(n <= 0.58) return RATE_VERY_SLOW;
+  if(n <= 0.78) return RATE_SLOW;   /* 예전 0.75(느리게)는 0.65로 */
+  return RATE_STD;                  /* 예전 1(보통)은 0.8로 */
+}
+/* '천천히' 버튼용: 설정이 더 느리면 설정값을 따른다 */
+function slowSpeakRate(){
+  return Math.min(normalizeRate(db.voice.rate), RATE_SLOW);
+}
+
+/* ============================================================
    STORAGE / STATE
    ============================================================ */
 var LS_KEY = "ort4-app-v1";
-var db = {books:{}, voice:{accent:"en-GB", rate:1}, best:0, read:{}, my:[]};
+var db = {books:{}, voice:{accent:"en-GB", rate:RATE_STD}, best:0, read:{}, my:[]};
 try{
   var raw = localStorage.getItem(LS_KEY);
   if(raw){
     var parsed = JSON.parse(raw);
     if(parsed && typeof parsed === "object"){
       db.books = parsed.books || {};
-      db.voice = Object.assign({accent:"en-GB", rate:1}, parsed.voice || {});
+      db.voice = Object.assign({accent:"en-GB", rate:RATE_STD}, parsed.voice || {});
+      db.voice.rate = normalizeRate(db.voice.rate);
       db.best = parsed.best || 0;
       db.read = (parsed.read && typeof parsed.read === "object") ? parsed.read : {};
       db.my = Array.isArray(parsed.my) ? parsed.my : [];
     }
   }
-}catch(e){ db = {books:{}, voice:{accent:"en-GB", rate:1}, best:0, read:{}, my:[]}; }
+}catch(e){ db = {books:{}, voice:{accent:"en-GB", rate:RATE_STD}, best:0, read:{}, my:[]}; }
 
 function saveDB(){
   try{ localStorage.setItem(LS_KEY, JSON.stringify(db)); }catch(e){}
@@ -959,7 +991,7 @@ function bookById(id){
    ============================================================ */
 var speechOK = (typeof window !== "undefined" && "speechSynthesis" in window);
 var SRClass = window.SpeechRecognition || window.webkitSpeechRecognition || null;
-var recOK = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && typeof window.MediaRecorder !== "undefined");
+var recOK = (function(){ try{ return recSupported(); }catch(e){ return false; } })();
 var voices = [];
 
 function loadVoices(){
@@ -1003,7 +1035,7 @@ function makeUtterance(text, rateOverride){
   var u = new SpeechSynthesisUtterance(String(text));
   var lang = db.voice.accent || "en-GB";
   u.lang = lang;
-  u.rate = rateOverride || db.voice.rate || 1;
+  u.rate = normalizeRate(rateOverride || db.voice.rate);
   u.pitch = 1;
   var v = pickVoice(lang);
   if(v) u.voice = v;
@@ -1297,7 +1329,7 @@ $("#list").addEventListener("click", function(e){
   if(sp){
     e.stopPropagation();
     var slow = sp.getAttribute("data-slow") === "1";
-    speak(sp.getAttribute("data-say"), slow ? 0.75 : null);
+    speak(sp.getAttribute("data-say"), slow ? slowSpeakRate() : null);
     return;
   }
   var ws = e.target.closest(".v-speak");
@@ -1357,8 +1389,77 @@ function setStar(id, v){
 
 /* ============================================================
    SPEECH LISTENING (STT) + FALLBACK
+   ------------------------------------------------------------
+   iOS(Safari) · 홈 화면 앱(PWA)에서는 webkitSpeechRecognition 이
+   없거나, 시작 직후 not-allowed / service-not-allowed / audio-capture
+   / network 로 실패하는 경우가 많고, MediaRecorder 도 audio/webm 을
+   지원하지 않는다. 그래서
+     1) 인식이 안 되면 조용히 끝내지 않고 즉시 getUserMedia + MediaRecorder
+        녹음(내 목소리 다시 듣기) 폴백으로 넘어가고,
+     2) MediaRecorder 는 지원되는 mimeType 을 골라 만들고(없으면 옵션 없이),
+     3) 마이크가 막혔을 때는 아이폰에서 켜는 법을 화면에 그대로 알려 준다.
    ============================================================ */
 var activeRec = null;
+var MIC_HELP = "아이폰 사파리에서 마이크 권한을 ‘허용’해 주세요. 홈 화면 아이콘에서 마이크가 막힐 때는 사파리(Safari)에서 직접 열면 잘 작동해요!";
+
+function isStandalone(){
+  try{
+    if(window.navigator && window.navigator.standalone) return true;
+    if(typeof window.matchMedia === "function" && window.matchMedia("(display-mode: standalone)").matches) return true;
+  }catch(e){}
+  return false;
+}
+function micHelpLine(){
+  return (isStandalone() ? "지금은 홈 화면 앱으로 열려 있어요. " : "") + MIC_HELP;
+}
+function recSupported(){
+  try{
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && typeof window.MediaRecorder !== "undefined");
+  }catch(e){ return false; }
+}
+function micErrMsg(err){
+  var name = err ? String(err.name || err.error || "") : "";
+  if(name === "NotAllowedError" || name === "PermissionDeniedError" || name === "SecurityError"){
+    return "마이크 사용을 허용하지 않았어요. " + micHelpLine();
+  }
+  if(name === "NotFoundError" || name === "DevicesNotFoundError"){
+    return "마이크를 찾지 못했어요. 다른 앱이 마이크를 쓰고 있지 않은지 확인해 주세요.";
+  }
+  if(name === "NotReadableError" || name === "TrackStartError" || name === "AbortError"){
+    return "마이크를 켜지 못했어요. 통화·녹음 앱을 닫고 다시 시도해 주세요.";
+  }
+  if(!navigator.mediaDevices){
+    return "이 화면에서는 마이크를 쓸 수 없어요(주소가 https 인지 확인해 주세요). " + micHelpLine();
+  }
+  return "마이크를 켜지 못했어요. " + micHelpLine();
+}
+/* iOS 는 audio/mp4, 크롬·안드로이드는 webm 을 쓴다. 지원 여부를 먼저 확인. */
+function pickRecMime(){
+  var cands = ["audio/mp4", "audio/aac", "audio/webm;codecs=opus", "audio/webm"];
+  var MR = window.MediaRecorder;
+  if(!MR || typeof MR.isTypeSupported !== "function") return "";
+  for(var i=0;i<cands.length;i++){
+    try{ if(MR.isTypeSupported(cands[i])) return cands[i]; }catch(e){}
+  }
+  return "";
+}
+function createRecorder(stream){
+  var MR = window.MediaRecorder;
+  var mime = pickRecMime();
+  if(mime){
+    try{ return new MR(stream, {mimeType: mime}); }catch(e){ /* 옵션이 거부되면 옵션 없이 */ }
+  }
+  return new MR(stream);
+}
+function stopTracks(stream){
+  try{ if(stream && stream.getTracks) stream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); }catch(e){}
+}
+function stopActiveRec(){
+  var mr = activeRec;
+  activeRec = null;
+  if(!mr) return;
+  try{ mr.__discard = true; if(mr.state !== "inactive") mr.stop(); }catch(e){}
+}
 
 function fbHTML(){
   return '<div class="fallback">' +
@@ -1369,25 +1470,37 @@ function fbHTML(){
 
 function renderFallback(row, text, msg){
   var fb = row.querySelector(".sent-fb");
+  if(!fb) return;
   fb.hidden = false;
   fb.innerHTML = (msg ? '<p class="warn">' + esc(msg) + "</p>" : "") + fbHTML();
 }
 
 function startListening(row, text){
   if(!row) return;
+  var fb = row.querySelector(".sent-fb");
+  if(!fb) return;
+  if(row.classList.contains("listening")) return;   /* 이미 듣는 중 */
+  stopActiveRec();                                   /* 이전 녹음 정리 */
+
   if(!SRClass){
-    renderFallback(row, text, "이 브라우저는 음성 인식(발음 평가)을 지원하지 않아요. Safari·Chrome 최신 버전에서 열면 자동 채점이 돼요.");
+    var m0 = "이 브라우저는 음성 인식(발음 평가)을 지원하지 않아요.";
+    m0 += recSupported() ? " 대신 내 목소리를 녹음해서 들어볼 수 있어요." : " " + micHelpLine();
+    renderFallback(row, text, m0);
     wireFallback(row, text);
+    if(recSupported()) startRecording(row, text, {auto:true});   /* 조용히 끝나지 않게 바로 녹음 */
     return;
   }
-  if(row.classList.contains("listening")) return;
 
   var micBtn = row.querySelector(".mic");
-  var stopBtn = row.querySelector(".mic-stop");
-
+  var micLabel = micBtn ? micBtn.textContent : "";
   var rec;
   try{ rec = new SRClass(); }
-  catch(err){ renderFallback(row, text, "음성 인식을 시작할 수 없어요. 아래 녹음 기능을 사용해 보세요."); wireFallback(row, text); return; }
+  catch(err){
+    renderFallback(row, text, "음성 인식을 시작할 수 없어요.");
+    wireFallback(row, text);
+    if(recSupported()) startRecording(row, text, {auto:true, msg:"음성 인식을 시작할 수 없어서 녹음으로 바꿨어요. 내 목소리를 들어 보세요."});
+    return;
+  }
 
   rec.lang = db.voice.accent || "en-GB";
   rec.interimResults = false;
@@ -1395,63 +1508,86 @@ function startListening(row, text){
   rec.continuous = false;
 
   var finished = false;
+  var watchdog = null;
   row.classList.add("listening");
-  micBtn.classList.add("rec");
-  micBtn.textContent = "● 듣는 중…";
-  var fb = row.querySelector(".sent-fb");
+  if(micBtn){ micBtn.classList.add("rec"); micBtn.textContent = "● 듣는 중…"; }
   fb.hidden = false;
-  fb.innerHTML = '<p class="note">🎤 이제 문장을 또박또박 말해 보세요…</p>';
+  fb.innerHTML = '<p class="note">🎤 이제 문장을 또박또박 말해 보세요… (인식이 안 되면 녹음으로 자동 전환돼요)</p>';
 
   function cleanup(){
     row.classList.remove("listening");
-    micBtn.classList.remove("rec");
-    micBtn.textContent = "🎤 따라 말하기";
+    if(micBtn){ micBtn.classList.remove("rec"); micBtn.textContent = micLabel || "🎤 따라 말하기"; }
+    if(watchdog){ clearTimeout(watchdog); watchdog = null; }
     try{ rec.stop(); }catch(e){}
     try{ rec.abort && rec.abort(); }catch(e){}
+  }
+  /* 인식 실패 → 메시지를 보여 주고, 가능하면 바로 녹음으로 넘어간다 */
+  function fallbackToRecord(msg){
+    if(!recSupported()){
+      renderFallback(row, text, msg + " " + micHelpLine());
+      wireFallback(row, text);
+      return;
+    }
+    startRecording(row, text, {auto:true, msg:msg});
   }
   rec.onresult = function(ev){
     if(finished) return;
     finished = true;
     cleanup();
     var said = "";
-    for(var i=0;i<ev.results.length;i++){ said += ev.results[i][0].transcript + " "; }
-    showScore(row, text, said.trim());
+    try{
+      for(var i=0;i<ev.results.length;i++){ said += ev.results[i][0].transcript + " "; }
+    }catch(e){}
+    showScore(row, text, said.replace(/\s+/g, " ").trim());
   };
   rec.onerror = function(ev){
+    var code = (ev && ev.error) ? String(ev.error) : "unknown";
+    if(code === "aborted"){                    /* 사용자가 멈춘 경우 — 조용히 끝냄 */
+      if(finished) return;
+      finished = true;
+      cleanup();
+      return;
+    }
     if(finished) return;
     finished = true;
     cleanup();
-    var code = (ev && ev.error) ? ev.error : "unknown";
-    var msg = "음성 인식에 문제가 생겼어요.";
+    var msg;
     if(code === "not-allowed" || code === "service-not-allowed"){
-      msg = "마이크 사용이 허용되지 않았어요. 주소창의 자물쇠/설정에서 마이크를 허용하거나, 아래 녹음 기능을 써 보세요.";
+      msg = "마이크 사용이 허용되지 않았어요. " + micHelpLine();
     } else if(code === "audio-capture"){
       msg = "마이크를 찾지 못했어요. 다른 앱이 마이크를 쓰고 있지 않은지 확인해 주세요.";
     } else if(code === "network"){
-      msg = "음성 인식 서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요. (일부 브라우저는 인터넷 없이 인식이 안 돼요)";
+      msg = "음성 인식 서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요. (아이폰은 인터넷이 없으면 인식이 안 돼요)";
     } else if(code === "no-speech"){
       msg = "소리가 잘 들리지 않았어요. 조금 크게 다시 말해 볼까요?";
-    } else if(code === "aborted"){
-      msg = "인식이 중단됐어요. 다시 눌러 주세요.";
+    } else if(code === "language-not-supported"){
+      msg = "이 기기에서 영어 음성 인식을 쓸 수 없어요. 대신 녹음으로 연습해 볼까요?";
+    } else {
+      msg = "음성 인식에 문제가 생겼어요.";
     }
-    renderFallback(row, text, msg);
-    wireFallback(row, text);
+    fallbackToRecord(msg);
   };
   rec.onend = function(){
-    if(!finished){
-      finished = true;
-      cleanup();
-      renderFallback(row, text, "음성을 듣지 못했어요. 다시 시도하거나 아래 녹음 기능을 써 보세요.");
-      wireFallback(row, text);
-    }
+    if(finished) return;
+    finished = true;
+    cleanup();
+    fallbackToRecord("음성을 듣지 못했어요. 다시 말해 보거나, 아래에서 내 목소리를 녹음해 들어 보세요.");
   };
   try{ rec.start(); }
   catch(err){
+    if(finished) return;
     finished = true;
     cleanup();
-    renderFallback(row, text, "음성 인식을 시작할 수 없어요. 이 화면에서는 자동 채점이 제한될 수 있어요.");
-    wireFallback(row, text);
+    fallbackToRecord("음성 인식을 시작할 수 없어요. 이 화면에서는 자동 채점이 제한될 수 있어요.");
+    return;
   }
+  /* 시작만 하고 아무 반응이 없는 경우(iOS 홈 화면 앱에서 흔함) → 12초 뒤 폴백 */
+  watchdog = setTimeout(function(){
+    if(finished) return;
+    finished = true;
+    cleanup();
+    fallbackToRecord("음성 인식이 시작되지 않았어요(아이폰 홈 화면 앱에서 자주 그래요). 대신 내 목소리를 녹음해서 들어볼 수 있어요.");
+  }, 12000);
 }
 
 function showScore(row, text, said){
@@ -1493,64 +1629,132 @@ function wireFallback(row, text){
   }
 }
 
-function startRecording(row, text){
+function showRecordError(row, text, msg){
   var fb = row.querySelector(".sent-fb");
-  if(!recOK){
-    fb.innerHTML = '<p class="warn">이 환경에서는 녹음도 지원되지 않아요. 문장을 소리 내어 읽고 스스로 확인해 보세요.</p>' + fbHTML();
+  if(!fb) return;
+  fb.hidden = false;
+  fb.innerHTML = '<p class="warn">' + esc(msg) + "</p>" +
+    '<div class="fallback"><p class="note">문장을 소리 내어 읽고, 아래에서 스스로 확인해 보세요.</p>' +
+    '<div class="record-wrap"><button class="mini rec-start">🎙 다시 녹음해 보기</button>' +
+    '<button class="mini self-ok">✓ 잘 읽었어요</button></div></div>';
+  wireFallback(row, text);
+}
+
+function showRecording(row, text, mr, secs, msg){
+  var fb = row.querySelector(".sent-fb");
+  if(!fb) return;
+  fb.hidden = false;
+  fb.innerHTML = (msg ? '<p class="warn">' + esc(msg) + "</p>" : "") +
+    '<p class="note">🎙 녹음 중이에요. 다 읽었으면 버튼을 눌러 주세요.</p>' +
+    '<div class="record-wrap"><button class="mini rec-stop">■ 녹음 중…</button>' +
+    '<button class="mini self-ok">✓ 잘 읽었어요</button></div>';
+  var stopBtn = fb.querySelector(".rec-stop");
+  var left = secs;
+  if(stopBtn){
+    stopBtn.textContent = "■ 녹음 중… (" + left + "초) 탭해서 정지";
+    stopBtn.addEventListener("click", function(){ stopRecording(mr); });
+  }
+  wireFallback(row, text);
+  var iv = setInterval(function(){
+    left--;
+    if(left <= 0){
+      clearInterval(iv);
+      stopRecording(mr);
+    } else if(stopBtn){
+      stopBtn.textContent = "■ 녹음 중… (" + left + "초) 탭해서 정지";
+    }
+  }, 1000);
+  try{ mr.__iv = iv; }catch(e){}
+}
+function stopRecording(mr){
+  if(!mr) return;
+  try{ if(mr.__iv) clearInterval(mr.__iv); }catch(e){}
+  try{ if(mr.state !== "inactive") mr.stop(); }catch(e){}
+}
+function wireRecordResult(row, text){
+  var fb = row.querySelector(".sent-fb");
+  if(!fb) return;
+  var again = fb.querySelector(".rec-again");
+  if(again) again.addEventListener("click", function(){ startRecording(row, text); });
+  var ok = fb.querySelector(".self-ok");
+  if(ok) ok.addEventListener("click", function(){
+    toast("스스로 확인했어요. 잘했어요! ✓");
+    ok.textContent = "✓ 확인 완료";
+    ok.disabled = true;
+  });
+}
+
+function startRecording(row, text, opts){
+  opts = opts || {};
+  var fb = row.querySelector(".sent-fb");
+  if(!fb) return;
+  if(!recSupported()){
+    fb.hidden = false;
+    fb.innerHTML = '<p class="warn">' + esc((opts.msg ? opts.msg + " " : "") + "이 화면에서는 마이크 녹음도 쓸 수 없어요. " + micHelpLine()) + "</p>" + fbHTML();
     wireFallback(row, text);
     return;
   }
-  var wrap = fb.querySelector(".record-wrap");
-  if(wrap) wrap.innerHTML = '<span class="note">🎙 녹음 준비 중…</span>';
+  stopActiveRec();
+  fb.hidden = false;
+  fb.innerHTML =
+    (opts.msg ? '<p class="warn">' + esc(opts.msg) + "</p>" : "") +
+    '<div class="record-wrap"><span class="note">🎙 마이크를 켜는 중…</span>' +
+    '<button class="mini self-ok">✓ 잘 읽었어요</button></div>';
+  wireFallback(row, text);
 
-  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+  var req;
+  try{ req = navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch(err){ showRecordError(row, text, micErrMsg(err)); return; }
+  if(!req || typeof req.then !== "function"){ showRecordError(row, text, micErrMsg(null)); return; }
+
+  req.then(function(stream){
     var chunks = [];
     var mr;
-    try{ mr = new MediaRecorder(stream); }
+    try{ mr = createRecorder(stream); }
     catch(err){
-      stream.getTracks().forEach(function(t){ t.stop(); });
-      fb.innerHTML = '<p class="warn">이 브라우저에서는 녹음을 지원하지 않아요.</p>' + fbHTML();
-      wireFallback(row, text);
+      stopTracks(stream);
+      showRecordError(row, text, "이 브라우저에서는 녹음을 지원하지 않아요. " + micHelpLine());
       return;
     }
+    var mime = "";
+    try{ mime = mr.mimeType || ""; }catch(e){}
     mr.ondataavailable = function(ev){ if(ev.data && ev.data.size) chunks.push(ev.data); };
     mr.onstop = function(){
-      stream.getTracks().forEach(function(t){ t.stop(); });
-      var blob = new Blob(chunks, {type: chunks.length && chunks[0].type ? chunks[0].type : "audio/webm"});
-      var url = URL.createObjectURL(blob);
+      stopTracks(stream);
+      if(activeRec === mr) activeRec = null;
+      try{ if(mr.__iv) clearInterval(mr.__iv); }catch(e){}
+      if(mr.__discard) return;                /* 다른 동작으로 정리된 녹음은 버림 */
+      var type = (chunks.length && chunks[0].type) ? chunks[0].type : (mime || "audio/mp4");
+      var url = "";
+      try{ url = URL.createObjectURL(new Blob(chunks, {type: type})); }catch(e){}
+      fb.hidden = false;
       fb.innerHTML = '<p class="note">내 목소리예요. 원문과 비교해 들어 보세요.</p>' +
-        '<audio controls src="' + url + '"></audio>' +
+        (url
+          ? '<audio controls playsinline src="' + url + '"></audio>'
+          : '<p class="warn">녹음은 됐지만 이 화면에서는 재생할 수 없어요.</p>') +
         '<div class="sent-actions" style="margin-top:8px">' +
           '<button class="mini ghost speak" data-say="' + esc(text) + '">🔊 원문 듣기</button>' +
           '<button class="mini rec-again">🎙 다시 녹음</button>' +
           '<button class="mini self-ok">✓ 잘 읽었어요</button>' +
         "</div>";
-      var again = fb.querySelector(".rec-again");
-      if(again) again.addEventListener("click", function(){ startRecording(row, text); });
-      var ok = fb.querySelector(".self-ok");
-      if(ok) ok.addEventListener("click", function(){ toast("스스로 확인했어요. 잘했어요! ✓"); ok.textContent = "✓ 확인 완료"; ok.disabled = true; });
+      wireRecordResult(row, text);
+    };
+    mr.onerror = function(){
+      stopTracks(stream);
+      if(activeRec === mr) activeRec = null;
+      showRecordError(row, text, "녹음 중 문제가 생겼어요. 다시 시도해 주세요.");
     };
     activeRec = mr;
-    try{ mr.start(); }catch(err){}
-    var secs = 8;
-    wrap = fb.querySelector(".record-wrap");
-    var btn = document.createElement("button");
-    btn.className = "mini rec-stop";
-    btn.textContent = "■ 녹음 중… (" + secs + "초) 탭해서 정지";
-    if(wrap){ wrap.innerHTML = ""; wrap.appendChild(btn); }
-    btn.addEventListener("click", function(){ try{ mr.stop(); }catch(e){} });
-    var iv = setInterval(function(){
-      secs--;
-      if(secs <= 0){
-        clearInterval(iv);
-        try{ mr.stop(); }catch(e){}
-      } else {
-        btn.textContent = "■ 녹음 중… (" + secs + "초) 탭해서 정지";
-      }
-    }, 1000);
-  }).catch(function(err){
-    fb.innerHTML = '<p class="warn">마이크를 사용할 수 없어요. (권한 거부 또는 이 화면에서는 녹음 불가) 문장을 소리 내어 읽고 스스로 확인해 보세요.</p>' + fbHTML();
-    wireFallback(row, text);
+    try{ mr.start(); }
+    catch(err){
+      stopTracks(stream);
+      if(activeRec === mr) activeRec = null;
+      showRecordError(row, text, "녹음을 시작하지 못했어요. " + micHelpLine());
+      return;
+    }
+    showRecording(row, text, mr, 8, opts.msg || "");
+  })["catch"](function(err){
+    showRecordError(row, text, micErrMsg(err));
   });
 }
 
@@ -1818,21 +2022,23 @@ document.addEventListener("click", function(e){
 var speakBookId = BOOKS[0].id;
 
 function renderVoiceBars(){
-  var accent = db.voice.accent, rate = db.voice.rate;
+  var accent = db.voice.accent, rate = normalizeRate(db.voice.rate);
+  var rateBtns = "";
+  for(var i=0;i<RATE_PRESETS.length;i++){
+    rateBtns += '<button data-v="' + RATE_PRESETS[i].v + '" class="' + (RATE_PRESETS[i].v === rate ? "on" : "") + '">' +
+      RATE_PRESETS[i].label + "</button>";
+  }
   $$(".voicebar").forEach(function(bar){
     bar.innerHTML =
       '<div class="segs" data-seg="accent">' +
         '<button data-v="en-GB" class="' + (accent === "en-GB" ? "on" : "") + '">🇬🇧 영국 발음</button>' +
         '<button data-v="en-US" class="' + (accent === "en-US" ? "on" : "") + '">🇺🇸 미국 발음</button>' +
       "</div>" +
-      '<div class="segs" data-seg="rate">' +
-        '<button data-v="0.75" class="' + (rate === 0.75 ? "on" : "") + '">0.75× 느리게</button>' +
-        '<button data-v="1" class="' + (rate === 1 ? "on" : "") + '">1× 보통</button>' +
-      "</div>";
+      '<div class="segs" data-seg="rate">' + rateBtns + "</div>";
   });
   $$('[data-seg="rate"]').forEach(function(seg){
     $$("button", seg).forEach(function(btn){
-      btn.classList.toggle("on", parseFloat(btn.getAttribute("data-v")) === rate);
+      btn.classList.toggle("on", Math.abs(normalizeRate(btn.getAttribute("data-v")) - rate) < 0.001);
     });
   });
   $$('[data-seg="accent"]').forEach(function(seg){
@@ -1840,6 +2046,8 @@ function renderVoiceBars(){
       btn.classList.toggle("on", btn.getAttribute("data-v") === accent);
     });
   });
+  var slowBtn = $("#rdSlow");
+  if(slowBtn) slowBtn.textContent = "🐢 천천히 " + slowSpeakRate() + "×";
 }
 
 document.addEventListener("click", function(e){
@@ -1850,7 +2058,7 @@ document.addEventListener("click", function(e){
   var val = btn.getAttribute("data-v");
   var changedAccent = (kind === "accent" && db.voice.accent !== val);
   if(kind === "accent") db.voice.accent = val;
-  if(kind === "rate") db.voice.rate = parseFloat(val);
+  if(kind === "rate") db.voice.rate = normalizeRate(val);
   saveDB();
   renderVoiceBars();
   if(changedAccent) speak("Hello! Let's read together.", null);
@@ -1880,7 +2088,7 @@ $("#speakList").addEventListener("click", function(e){
   var sp = e.target.closest("[data-say]");
   if(sp){
     var slow = sp.getAttribute("data-slow") === "1";
-    speak(sp.getAttribute("data-say"), slow ? 0.75 : null);
+    speak(sp.getAttribute("data-say"), slow ? slowSpeakRate() : null);
     return;
   }
   var mic = e.target.closest(".mic");
@@ -2100,6 +2308,7 @@ function renderReader(){
   var hasText = lines.length > 0;
   $("#rdListen").disabled = !hasText;
   $("#rdSlow").disabled = !hasText;
+  $("#rdSlow").textContent = "🐢 천천히 " + slowSpeakRate() + "×";
   $("#rdSpeakBtn").disabled = !hasText;
   $("#rdDone").hidden = !(reader.idx >= count - 1);
   var fin = $("#rdFinish");
@@ -2115,6 +2324,7 @@ function readerGo(delta){
   var n = reader.idx + delta;
   if(n < 0 || n > reader.pages.length - 1) return;
   stopPageSpeech();
+  stopActiveRec();
   var fb = $("#rdSent .sent-fb");
   if(fb){ fb.innerHTML = ""; fb.hidden = true; }
   $("#rdSpeakRow").hidden = true;
@@ -2126,6 +2336,7 @@ function readerGo(delta){
 function closeReader(){
   if(!reader.id) return;
   stopPageSpeech();
+  stopActiveRec();
   reader.id = null;
   reader.pages = [];
   $("#reader").hidden = true;
@@ -2136,12 +2347,15 @@ function closeReader(){
 function stopPageSpeech(){
   reader.token++;
   reader.speaking = false;
+  if(reader.pauseTimer){ clearTimeout(reader.pauseTimer); reader.pauseTimer = null; }
   var b1 = $("#rdListen"), b2 = $("#rdSlow");
   if(b1) b1.classList.remove("playing");
   if(b2) b2.classList.remove("playing");
   $$("#rdText .rd-line").forEach(function(el){ el.classList.remove("on"); });
   try{ if(speechOK) window.speechSynthesis.cancel(); }catch(e){}
 }
+/* 문장 사이 숨 고르기 */
+var READ_PAUSE_MS = 300;
 function readPage(slow){
   if(!speechOK){ toast("이 브라우저는 음성 읽기를 지원하지 않아요."); return; }
   if(reader.speaking){ stopPageSpeech(); return; }
@@ -2153,10 +2367,14 @@ function readPage(slow){
   reader.speaking = true;
   if(btn) btn.classList.add("playing");
   var nodes = $$("#rdText .rd-line");
-  var rate = slow ? 0.75 : (db.voice.rate || 1);
+  var rate = slow ? slowSpeakRate() : normalizeRate(db.voice.rate);
   var i = 0;
+  function clearPause(){
+    if(reader.pauseTimer){ clearTimeout(reader.pauseTimer); reader.pauseTimer = null; }
+  }
   function finish(){
     if(token !== reader.token) return;
+    clearPause();
     reader.speaking = false;
     if(btn) btn.classList.remove("playing");
     nodes.forEach(function(el){ el.classList.remove("on"); });
@@ -2168,7 +2386,13 @@ function readPage(slow){
     nodes.forEach(function(el, k){ el.classList.toggle("on", k === cur); });
     var u = makeUtterance(lines[cur], rate);
     var advanced = false;
-    var go = function(){ if(advanced) return; advanced = true; step(); };
+    var go = function(){
+      if(advanced) return;
+      advanced = true;
+      if(token !== reader.token) return;
+      clearPause();
+      reader.pauseTimer = setTimeout(step, READ_PAUSE_MS);  /* 한 줄 읽고 0.3초 쉼 */
+    };
     u.onend = go;
     u.onerror = go;
     try{ window.speechSynthesis.speak(u); }catch(e){ finish(); }
@@ -2498,7 +2722,11 @@ $("#btnSettings").addEventListener("click", function(){
   renderVoiceBars();
   $("#capTts").textContent = speechOK ? "지원 ✓" : "지원 안 됨";
   $("#capStt").textContent = SRClass ? "지원 ✓" : "지원 안 됨";
-  $("#capRec").textContent = recOK ? "지원 ✓" : "지원 안 됨";
+  $("#capRec").textContent = recSupported() ? "지원 ✓" : "지원 안 됨";
+  var tip = "";
+  if(isStandalone()) tip = "홈 화면 앱에서는 마이크·음성 인식이 제한될 수 있어요. 마이크가 안 되면 사파리(Safari)에서 열어 주세요.";
+  else if(!recSupported()) tip = "이 브라우저에서는 마이크 녹음이 안 돼요. 아이폰은 사파리(Safari)에서 열어 주세요.";
+  if($("#capMicTip")){ $("#capMicTip").textContent = tip; $("#capMicTip").hidden = !tip; }
   var main = mainBooks();
   var done = main.filter(function(b){ return db.books[b.id] && db.books[b.id].d; }).length;
   var memo = 0;
@@ -2591,6 +2819,14 @@ function runSelfTest(){
   ok("TTS 플래그 정의", typeof speechOK === "boolean");
   ok("STT 클래스 감지", SRClass === null || typeof SRClass === "function");
   ok("speak 함수 존재", typeof speak === "function");
+  ok("읽기 속도 기본 0.8", normalizeRate(1) === 0.8 && normalizeRate(0.8) === 0.8);
+  ok("예전 느리게(0.75) → 0.65", normalizeRate(0.75) === 0.65 && normalizeRate(0.65) === 0.65);
+  ok("속도 3단계 0.55·0.65·0.8", RATE_PRESETS.map(function(p){ return p.v; }).join(",") === "0.55,0.65,0.8");
+  ok("천천히는 0.65 이하", slowSpeakRate() <= 0.65);
+  ok("문장 사이 쉼 300ms", READ_PAUSE_MS >= 250 && READ_PAUSE_MS <= 350);
+  ok("마이크 안내 문구", /사파리/.test(MIC_HELP));
+  ok("녹음 mime 감지", typeof pickRecMime === "function" && typeof pickRecMime() === "string");
+  ok("녹음 지원 판별", typeof recSupported === "function" && typeof recSupported() === "boolean");
   ok("음성 설정 저장값", db.voice.accent === "en-GB" || db.voice.accent === "en-US");
   ok("localStorage 저장 가능", (function(){ try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); return true; }catch(e){ return false; } })());
 
