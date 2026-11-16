@@ -145,6 +145,23 @@ h1,h2,h3,p,ul,ol{margin:0}
 .note{font-size:11.5px;color:#9a9384;margin-top:7px;line-height:1.5}
 .record-wrap{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:8px}
 .record-wrap audio{width:100%;height:34px}
+.sent-fb audio{width:100%;height:34px;margin-top:8px}
+/* ---------- 녹음 음량 미터 · 음성 분석 카드 ---------- */
+.lvl{height:9px;border-radius:99px;background:#ece5d7;overflow:hidden;margin-top:9px}
+.lvl i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#9ad8bd,#1f6f5c);transition:width .1s linear}
+.lvl-cap{font-size:11px;color:#9a9384;margin-top:5px}
+.an-top{display:flex;align-items:flex-start;gap:10px}
+.an-score{font-size:24px;font-weight:800;line-height:1.1;color:var(--green);flex:0 0 auto}
+.an-score.mid{color:var(--amber)}
+.an-score.low{color:var(--red)}
+.an-head{font-size:12.5px;color:#5f594d;line-height:1.45;padding-top:4px}
+.an-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.an-chip{font-size:11px;background:#f2eee3;color:#6d6659;border-radius:99px;padding:3px 9px;font-weight:600}
+.an-line{font-size:12px;color:#5c5649;margin-top:7px;line-height:1.5}
+.an-line b{color:#26231d;margin-right:4px}
+.rhythm{display:flex;align-items:flex-end;gap:2px;height:46px;margin-top:9px;padding:5px 6px;background:#fbf8f1;border:1px solid #eee7da;border-radius:10px;overflow:hidden}
+.rhythm i{flex:1 1 0;width:0;min-height:3px;background:linear-gradient(180deg,#2f8b73,#9ad8bd);border-radius:3px}
+a.mini{display:inline-block;text-decoration:none;line-height:1.55}
 
 /* stars / memo */
 .rate-row{display:flex;align-items:center;gap:10px;margin-top:16px}
@@ -464,13 +481,13 @@ h1,h2,h3,p,ul,ol{margin:0}
   <!-- ================= SPEAK ================= -->
   <section class="view" id="viewSpeak" hidden>
     <h2 class="vtitle">🎤 따라 말하기</h2>
-    <p class="vsub">문장을 듣고 그대로 따라 말해 봐요. 점수와 함께 어떤 단어가 잘 들렸는지 색으로 보여 줘요.</p>
+    <p class="vsub">문장을 듣고 그대로 따라 말해 봐요. 음성 인식이 안 되는 아이폰에서도 내 목소리를 녹음해 점수와 피드백을 바로 받을 수 있어요.</p>
 
     <select class="select" id="speakBook" style="margin-top:14px"></select>
     <div class="voicebar" id="voiceBarSpeak"></div>
     <p class="cap" id="speakCap"></p>
     <div id="speakList" style="margin-top:14px"></div>
-    <p class="foot">🎤 마이크는 이 기기 안에서만 쓰이고, 인식된 문장은 저장되지 않아요.</p>
+    <p class="foot">🎤 마이크는 이 기기 안에서만 쓰이고, 녹음 분석도 이 폰에서 바로 해요. 어디로도 보내지 않아요.</p>
   </section>
 </main>
 
@@ -496,6 +513,7 @@ h1,h2,h3,p,ul,ol{margin:0}
       <div class="cap-line"><span>문장 읽어 주기 (TTS)</span><b id="capTts">확인 중…</b></div>
       <div class="cap-line"><span>발음 인식 (STT)</span><b id="capStt">확인 중…</b></div>
       <div class="cap-line"><span>녹음 (MediaRecorder)</span><b id="capRec">확인 중…</b></div>
+      <div class="cap-line"><span>음량·속도 분석 (Web Audio)</span><b id="capAn">확인 중…</b></div>
       <p class="cap" id="capMicTip" hidden></p>
     </div>
 
@@ -1461,9 +1479,427 @@ function stopActiveRec(){
   try{ mr.__discard = true; if(mr.state !== "inactive") mr.stop(); }catch(e){}
 }
 
+/* ============================================================
+   VOICE ANALYSIS — 녹음한 오디오를 직접 분석
+   ------------------------------------------------------------
+   SpeechRecognition 이 없거나 막히는 iOS 사파리 · 홈 화면 앱에서도,
+   MediaRecorder 로 녹음한 오디오를 Web Audio API 로 직접 읽어서
+     · 총 녹음 시간 / 실제 말한 시간
+     · 음량 (평균·최대 RMS)
+     · 목표 문장 단어 수 대비 말하기 속도
+     · 발화 리듬 (강약·끊어 읽기) 막대
+     · 0~100 종합 점수
+   를 계산해 보여 준다. 오디오를 해석할 수 없는 브라우저에서는
+   녹음 중에 모은 음량 샘플로 안전하게 대신한다(폴백).
+   ============================================================ */
+var AN_SILENT = 0.0055;     /* 이보다 작은 소리는 무음 (RMS) */
+var AN_VOL_GOOD = 0.035;    /* 충분히 큰 목소리 */
+var AN_VOL_LOW = 0.010;     /* 조금 작은 목소리 */
+var AN_PACE_MIN = 0.35;     /* 적정 속도: 단어당 0.35초 ~ 0.85초 */
+var AN_PACE_MAX = 0.85;
+var AN_MOD_NOISE = 0.12;    /* 강약 변화가 이보다 적으면 말소리 대신 소음 */
+var AN_BARS = 20;           /* 리듬 막대 개수 */
+var AN_MIN_SPEECH = 0.2;    /* 이보다 짧게 들리면 사실상 무음 */
+var AN_METER_FULL = 0.12;   /* 레벨 미터가 100%가 되는 RMS */
+var AN_FRAME_SEC = 0.02;    /* 분석 프레임 20ms */
+
+function anClamp(n, lo, hi){ n = parseFloat(n); if(isNaN(n)) return lo; return n < lo ? lo : (n > hi ? hi : n); }
+function round2(n){ return Math.round((parseFloat(n) || 0) * 100) / 100; }
+function round3(n){ return Math.round((parseFloat(n) || 0) * 1000) / 1000; }
+function wordCountOf(text){ return normWords(text).length; }
+function audioCtxClass(){
+  try{ return window.AudioContext || window.webkitAudioContext || null; }catch(e){ return null; }
+}
+
+/* ---------- 녹음 중 실시간 음량 미터 ---------- */
+function startLevelMeter(stream){
+  var out = {supported:false, samples:[], peak:0, level:0, sink:null, stop:function(){}};
+  var AC = audioCtxClass();
+  if(!AC || !stream) return out;
+  var ctx = null, src = null, analyser = null, buf = null;
+  try{
+    ctx = new AC();
+    src = ctx.createMediaStreamSource(stream);
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 1024;
+    try{ analyser.smoothingTimeConstant = 0.4; }catch(e){}
+    src.connect(analyser);
+    buf = new Uint8Array(analyser.fftSize);
+    out.supported = true;
+  }catch(e){
+    try{ if(ctx && ctx.close) ctx.close(); }catch(err){}
+    return out;
+  }
+  try{ if(ctx.state === "suspended" && ctx.resume) ctx.resume(); }catch(e){}
+  var stopped = false;
+  function read(){
+    if(stopped || !analyser || !buf) return;
+    try{
+      analyser.getByteTimeDomainData(buf);
+      var sum = 0, i, v;
+      for(i=0;i<buf.length;i++){ v = (buf[i] - 128) / 128; sum += v * v; }
+      var rms = Math.sqrt(sum / buf.length);
+      out.level = rms;
+      out.samples.push(round3(rms));
+      if(out.samples.length > 1800) out.samples.shift();
+      if(rms > out.peak) out.peak = rms;
+      if(out.sink){ try{ out.sink(rms); }catch(e){} }
+    }catch(e){}
+  }
+  var timer = setInterval(read, 100);
+  read();
+  out.stop = function(){
+    if(stopped) return;
+    stopped = true;
+    try{ clearInterval(timer); }catch(e){}
+    try{ if(src && src.disconnect) src.disconnect(); }catch(e){}
+    try{ if(ctx && ctx.close) ctx.close(); }catch(e){}
+    analyser = null;
+  };
+  return out;
+}
+
+/* ---------- PCM → 프레임별 음량 ---------- */
+function statsFromBuffer(buff, words){
+  var sr = parseFloat(buff && buff.sampleRate) || 44100;
+  var len = parseInt(buff && buff.length, 10) || 0;
+  var data = null;
+  try{ data = buff.getChannelData(0); }catch(e){ data = null; }
+  if(!data || !data.length) return null;
+  if(len < data.length) len = data.length;
+  var fs = Math.max(32, Math.round(sr * AN_FRAME_SEC));
+  var frames = [], pos, i, v, sum, n;
+  for(pos=0; pos + fs <= data.length; pos += fs){
+    sum = 0;
+    for(i=pos;i<pos+fs;i++){ v = data[i] || 0; sum += v * v; }
+    frames.push(Math.sqrt(sum / fs));
+  }
+  if(frames.length < 2 && pos < data.length){
+    sum = 0; n = 0;
+    for(i=pos;i<data.length;i++){ v = data[i] || 0; sum += v * v; n++; }
+    if(n) frames.push(Math.sqrt(sum / n));
+  }
+  if(!frames.length) return null;
+  var peak = 0;
+  for(i=0;i<frames.length;i++) if(frames[i] > peak) peak = frames[i];
+  var thr = Math.max(AN_SILENT * 1.2, peak * 0.18);
+  var voiced = 0, sumV = 0, firstV = -1, lastV = -1, voicedArr = [];
+  for(i=0;i<frames.length;i++){
+    if(frames[i] >= thr){
+      voiced++; sumV += frames[i]; voicedArr.push(frames[i]);
+      if(firstV < 0) firstV = i;
+      lastV = i;
+    }
+  }
+  var frameSec = fs / sr;
+  var avg = voiced ? sumV / voiced : 0;
+  var mod = 0;
+  if(voicedArr.length >= 3 && avg > 0){
+    var vs = 0, d;
+    for(i=0;i<voicedArr.length;i++){ d = voicedArr[i] - avg; vs += d * d; }
+    mod = Math.sqrt(vs / voicedArr.length) / avg;
+  }
+  var gapRatio = 0;
+  if(firstV >= 0 && lastV > firstV){
+    var span = lastV - firstV + 1;
+    gapRatio = (span - voiced) / span;
+  }
+  return {
+    duration: len / sr,
+    speechSec: voiced * frameSec,
+    avgRms: avg,
+    peakRms: peak,
+    words: words || 0,
+    mod: mod,
+    gapRatio: gapRatio,
+    frames: frames,
+    peakFrames: peak
+  };
+}
+
+/* ---------- 프레임 → 리듬 막대 ---------- */
+function barsFrom(frames, n, peak){
+  n = n || AN_BARS;
+  var out = [], i, j, a, b, mx;
+  if(!frames || !frames.length) return out;
+  if(!peak){ peak = 0; for(i=0;i<frames.length;i++) if(frames[i] > peak) peak = frames[i]; }
+  if(!peak) return out;
+  var per = frames.length / n;
+  for(i=0;i<n;i++){
+    a = Math.floor(i * per);
+    b = Math.floor((i + 1) * per);
+    if(b <= a) b = a + 1;
+    mx = 0;
+    for(j=a;j<b && j<frames.length;j++) if(frames[j] > mx) mx = frames[j];
+    out.push(Math.round(anClamp(mx / peak, 0, 1) * 100) / 100);
+  }
+  return out;
+}
+
+/* ---------- 측정값 → 판정·점수 ---------- */
+function judgeAudio(st){
+  st = st || {};
+  var words = st.words > 0 ? Math.round(st.words) : 0;
+  var dur = Math.max(0, parseFloat(st.duration) || 0);
+  var speech = Math.max(0, parseFloat(st.speechSec) || 0);
+  var avg = Math.max(0, parseFloat(st.avgRms) || 0);
+  var peak = Math.max(0, parseFloat(st.peakRms) || 0);
+  var gapRatio = anClamp(st.gapRatio || 0, 0, 1);
+  var mod = Math.max(0, parseFloat(st.mod) || 0);
+  var noSound = (speech < AN_MIN_SPEECH) || (peak < AN_SILENT);
+  var noise = !noSound && mod > 0 && mod < AN_MOD_NOISE;
+  var volume = "silent", pace = "none", secPerWord = 0;
+  if(!noSound){
+    volume = avg >= AN_VOL_GOOD ? "good" : (avg >= AN_VOL_LOW ? "low" : "silent");
+    if(words){
+      secPerWord = speech / words;
+      if(secPerWord < AN_PACE_MIN) pace = "fast";
+      else if(secPerWord > AN_PACE_MAX) pace = "slow";
+      else pace = "good";
+    }
+  }
+  var score = 0;
+  if(!noSound){
+    var need = words ? words * AN_PACE_MIN : 0.5;
+    var sSpeech = 30 * anClamp(speech / Math.max(0.5, need), 0, 1);
+    var sVol = volume === "good" ? 25 : (volume === "low" ? 25 * anClamp(avg / AN_VOL_GOOD, 0, 1) : 0);
+    var sPace = 18;
+    if(words){
+      if(pace === "fast") sPace = 25 * anClamp(secPerWord / AN_PACE_MIN, 0.15, 1);
+      else if(pace === "slow") sPace = 25 * anClamp((AN_PACE_MAX * 1.6 - secPerWord) / (AN_PACE_MAX * 0.6), 0.1, 1);
+      else sPace = 25;
+    }
+    var sFlu = 20 * anClamp(1 - gapRatio * 1.4, 0, 1);
+    score = sSpeech + sVol + sPace + sFlu;
+    if(noise) score = score * 0.35;
+  }
+  var rhythm = Array.isArray(st.rhythm) ? st.rhythm : barsFrom(st.frames, AN_BARS, st.peakFrames);
+  return {
+    source: st.source || "audio",
+    duration: round2(dur),
+    speechSec: round2(speech),
+    speechRatio: dur ? round2(speech / dur) : 0,
+    avgRms: round3(avg),
+    peakRms: round3(peak),
+    words: words,
+    secPerWord: round2(secPerWord),
+    volume: volume,
+    pace: pace,
+    gapRatio: round2(gapRatio),
+    mod: round2(mod),
+    noise: noise,
+    noSound: noSound,
+    score: Math.round(anClamp(score, 0, 100)),
+    rhythm: rhythm
+  };
+}
+
+function volumeMessage(v){
+  if(v === "good") return "목소리가 선명하게 녹음됐어요.";
+  if(v === "low") return "조금 더 크게 말해보세요.";
+  return "소리가 거의 들리지 않았어요.";
+}
+function paceMessage(p, words){
+  if(!words) return "문장을 소리 내어 읽고 다시 확인해 보세요.";
+  if(p === "good") return "적당한 속도로 또박또박 읽었어요.";
+  if(p === "fast") return "조금 빨랐어요, 천천히 읽어보세요.";
+  if(p === "slow") return "문장 끝까지 조금 더 이어서 말해보세요.";
+  return "문장을 끝까지 읽어 보세요.";
+}
+function analysisHead(a){
+  if(a.noSound) return "소리가 거의 들리지 않았어요. 마이크 가까이에서 다시 녹음해 주세요.";
+  if(a.noise) return "말소리보다 주변 소음이 크게 섞였어요. 조용한 곳에서 다시 해 보세요.";
+  if(a.score >= 85) return "아주 좋아요! 원어민처럼 자연스러워요 🎉";
+  if(a.score >= 70) return "좋아요! 이 정도면 충분히 잘 읽었어요 👍";
+  if(a.score >= 50) return "잘하고 있어요. 조금만 더 또박또박 말해 봐요 💪";
+  return "다시 한 번 천천히 말해 볼까요? 🐢";
+}
+
+/* ---------- 오디오 해석 실패 시: 녹음 중 음량 샘플로 대신 ---------- */
+function fallbackAnalysis(levels, words, seconds, reason){
+  var arr = [], i, v;
+  if(levels && levels.length){
+    for(i=0;i<levels.length;i++){
+      v = parseFloat(levels[i]);
+      if(!isNaN(v) && v >= 0) arr.push(v);
+    }
+  }
+  var dur = Math.max(0, parseFloat(seconds) || 0);
+  var st = {source:"levels", words:words || 0, duration:dur, frames:arr};
+  if(arr.length >= 3){
+    var peak = 0;
+    for(i=0;i<arr.length;i++) if(arr[i] > peak) peak = arr[i];
+    var thr = Math.max(AN_SILENT * 1.2, peak * 0.2);
+    var voiced = 0, sum = 0, firstV = -1, lastV = -1, voicedArr = [];
+    for(i=0;i<arr.length;i++){
+      if(arr[i] >= thr){
+        voiced++; sum += arr[i]; voicedArr.push(arr[i]);
+        if(firstV < 0) firstV = i;
+        lastV = i;
+      }
+    }
+    if(!dur) dur = arr.length * 0.1;
+    var step = dur / arr.length;
+    var avg = voiced ? sum / voiced : 0;
+    var mod = 0;
+    if(voicedArr.length >= 3 && avg > 0){
+      var vs = 0, d;
+      for(i=0;i<voicedArr.length;i++){ d = voicedArr[i] - avg; vs += d * d; }
+      mod = Math.sqrt(vs / voicedArr.length) / avg;
+    }
+    var gapRatio = 0;
+    if(firstV >= 0 && lastV > firstV) gapRatio = ((lastV - firstV + 1) - voiced) / (lastV - firstV + 1);
+    st.duration = dur;
+    st.speechSec = voiced * step;
+    st.avgRms = avg;
+    st.peakRms = peak;
+    st.mod = mod;
+    st.gapRatio = gapRatio;
+    st.peakFrames = peak;
+  }
+  var res = judgeAudio(st);
+  res.fallback = true;
+  res.source = "levels";
+  res.reason = reason || "";
+  if(arr.length < 3){
+    res.unknown = true;
+    res.score = 0;
+    res.note = "이 브라우저에서는 녹음 내용을 자세히 분석하지 못했어요. 위 플레이어로 직접 들어 보며 확인해 주세요.";
+  }else{
+    res.note = "소리를 자세히 해석할 수 없어, 녹음 길이와 음량으로 살펴봤어요.";
+  }
+  return res;
+}
+
+/* ---------- decodeAudioData 는 최신은 Promise, 예전 사파리는 콜백 ---------- */
+function decodeAudioBuffer(ctx, arrayBuf, onOk, onBad){
+  var settled = false;
+  function ok(b){ if(settled) return; settled = true; onOk(b); }
+  function bad(e){ if(settled) return; settled = true; onBad(e); }
+  var ret;
+  try{ ret = ctx.decodeAudioData(arrayBuf, ok, bad); }
+  catch(e){ bad(e); return; }
+  try{ if(ret && typeof ret.then === "function") ret.then(ok, bad); }catch(e){}
+}
+
+/* ---------- 녹음 Blob → 분석 결과 (Promise) ---------- */
+function analyzeRecordedAudio(blob, targetText, opts){
+  opts = opts || {};
+  var words = wordCountOf(targetText);
+  var levels = opts.levels || [];
+  var seconds = opts.seconds || 0;
+  return new Promise(function(resolve){
+    var settled = false, ctx = null, guard = null;
+    function finish(res){
+      if(settled) return;
+      settled = true;
+      if(guard){ try{ clearTimeout(guard); }catch(e){} guard = null; }
+      try{ if(ctx && ctx.close) ctx.close(); }catch(e){}
+      ctx = null;
+      res = res || judgeAudio({words:words, source:"none"});
+      if(typeof res.score !== "number") res.score = 0;
+      resolve(res);
+    }
+    function fallback(reason){ finish(fallbackAnalysis(levels, words, seconds, reason)); }
+    if(!blob){ fallback("no-blob"); return; }
+    var AC = audioCtxClass();
+    if(!AC){ fallback("no-audioctx"); return; }
+    var ab = null;
+    try{ ab = (typeof blob.arrayBuffer === "function") ? blob.arrayBuffer() : null; }catch(e){ ab = null; }
+    if(!ab || typeof ab.then !== "function"){ fallback("no-buffer"); return; }
+    guard = setTimeout(function(){ fallback("timeout"); }, 9000);
+    ab.then(function(arrayBuf){
+      if(settled) return;
+      try{ ctx = new AC(); }catch(e){ fallback("audioctx-error"); return; }
+      try{ if(ctx.state === "suspended" && ctx.resume) ctx.resume(); }catch(e){}
+      decodeAudioBuffer(ctx, arrayBuf, function(buff){
+        if(settled) return;
+        var stats = null;
+        try{ stats = statsFromBuffer(buff, words); }catch(e){ stats = null; }
+        if(!stats){ fallback("empty-buffer"); return; }
+        stats.source = "audio";
+        finish(judgeAudio(stats));
+      }, function(){ fallback("decode-error"); });
+    })["catch"](function(){ fallback("read-error"); });
+  });
+}
+
+/* ---------- 화면에 보여 주기 ---------- */
+function fmtSec(n){ return (Math.round((parseFloat(n) || 0) * 10) / 10).toFixed(1); }
+function recStamp(){
+  var d = new Date();
+  function p(n){ return (n < 10 ? "0" : "") + n; }
+  return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
+}
+function extForMime(type){
+  var t = String(type || "").toLowerCase();
+  if(t.indexOf("webm") >= 0) return ".webm";
+  if(t.indexOf("ogg") >= 0) return ".ogg";
+  if(t.indexOf("wav") >= 0) return ".wav";
+  if(t.indexOf("mpeg") >= 0 || t.indexOf("mp3") >= 0) return ".mp3";
+  return ".m4a";
+}
+function rhythmHTML(a){
+  var arr = (a && a.rhythm) || [], bars = "", i, h;
+  if(!arr.length) return "";
+  for(i=0;i<arr.length;i++){
+    h = Math.max(3, Math.round(anClamp(arr[i], 0, 1) * 100));
+    bars += '<i style="height:' + h + '%"></i>';
+  }
+  return '<div class="rhythm" role="img" aria-label="발화 리듬 막대 ' + arr.length + '개">' + bars + "</div>" +
+    '<p class="note">막대 높이 = 말할 때의 소리 크기예요. 강약과 끊어 읽은 곳이 보여요.</p>';
+}
+function analysisHTML(a, text, url, fname){
+  var lvl = a.score >= 70 ? "" : (a.score >= 40 ? " mid" : " low");
+  var h = '<div class="an-top"><span class="an-score' + lvl + '">' + (a.unknown ? "—" : a.score + "%") + "</span>" +
+    '<span class="an-head">' + esc(analysisHead(a)) + "</span></div>";
+  var chips = [];
+  chips.push("🎙 총 " + fmtSec(a.duration) + "초");
+  if(!a.unknown) chips.push("🗣 말한 시간 " + fmtSec(a.speechSec) + "초");
+  if(a.words) chips.push("📝 " + a.words + "단어" + (a.secPerWord ? " · " + fmtSec(a.secPerWord) + "초/단어" : ""));
+  if(!a.unknown) chips.push(a.volume === "good" ? "🔊 음량 충분" : (a.volume === "low" ? "🔉 음량 작음" : "🔇 음량 매우 작음"));
+  var ch = "";
+  for(var i=0;i<chips.length;i++) ch += '<span class="an-chip">' + esc(chips[i]) + "</span>";
+  h += '<div class="an-chips">' + ch + "</div>";
+  if(!a.unknown){
+    h += '<p class="an-line"><b>음량</b>' + esc(volumeMessage(a.volume)) + "</p>";
+    h += '<p class="an-line"><b>속도</b>' + esc(paceMessage(a.pace, a.words)) + "</p>";
+    if(a.noise) h += '<p class="an-line"><b>소리</b>주변 소음이 크게 섞였어요. 조용한 곳에서 다시 해 보세요.</p>';
+  }
+  if(a.note) h += '<p class="note">' + esc(a.note) + "</p>";
+  h += rhythmHTML(a);
+  if(url) h += '<audio controls playsinline preload="metadata" src="' + esc(url) + '"></audio>';
+  h += '<div class="sent-actions">' +
+    '<button class="mini ghost speak" data-say="' + esc(text) + '">🔊 원어민 다시 듣기</button>' +
+    (url ? '<button class="mini play-mine">▶ 내 목소리 듣기</button>' : "") +
+    (url ? '<a class="mini" href="' + esc(url) + '" download="' + esc(fname || "ort-recording.m4a") + '">💾 녹음 저장</a>' : "") +
+    '<button class="mini rec-again">🎙 다시 녹음</button>' +
+    '<button class="mini self-ok">✓ 잘 읽었어요</button>' +
+    "</div>";
+  return h;
+}
+function showAnalysis(row, text, blob, url, a, transcript){
+  var fb = row.querySelector(".sent-fb");
+  if(!fb) return;
+  var type = "";
+  try{ type = (blob && blob.type) || ""; }catch(e){}
+  var fname = "ort-recording-" + recStamp() + extForMime(type);
+  fb.hidden = false;
+  fb.innerHTML = analysisHTML(a, text, url, fname) + (transcript ? transcriptHTML(text, transcript) : "");
+  wireRecordResult(row, text);
+  if(!row.__lastAnalysis) row.__lastAnalysis = a;
+}
+/* STT 결과가 함께 있을 때만 쓰는 단어별 표시 */
+function transcriptHTML(text, said){
+  var res = markSentence(text, said);
+  return '<p class="said">인식된 말: “' + esc(said) + '”</p>' +
+    '<p class="mark">' + res.html + "</p>" +
+    '<p class="note">🟩 정확히 인식 · 🟨 비슷하게 인식 · 🟥 빠졌거나 다르게 인식 (' + res.hits + "/" + res.total + " 단어)</p>";
+}
+
 function fbHTML(){
   return '<div class="fallback">' +
-    '<p class="note">🎧 문장을 몇 번 듣고, 입으로 소리 내어 읽어 보세요. 아래에서 내 목소리를 녹음해 직접 들어 볼 수 있어요.</p>' +
+    '<p class="note">🎧 문장을 몇 번 듣고 입으로 소리 내어 읽어 보세요. 아래에서 녹음하면 음량·속도·리듬을 분석해 점수와 피드백을 보여 드려요.</p>' +
     '<div class="record-wrap"><button class="mini rec-start">🎙 녹음해서 들어보기</button>' +
     '<button class="mini self-ok">✓ 잘 읽었어요</button></div></div>';
 }
@@ -1484,7 +1920,7 @@ function startListening(row, text){
 
   if(!SRClass){
     var m0 = "이 브라우저는 음성 인식(발음 평가)을 지원하지 않아요.";
-    m0 += recSupported() ? " 대신 내 목소리를 녹음해서 들어볼 수 있어요." : " " + micHelpLine();
+    m0 += recSupported() ? " 대신 내 목소리를 녹음하면 음량·속도까지 분석해 드려요." : " " + micHelpLine();
     renderFallback(row, text, m0);
     wireFallback(row, text);
     if(recSupported()) startRecording(row, text, {auto:true});   /* 조용히 끝나지 않게 바로 녹음 */
@@ -1642,14 +2078,23 @@ function showRecordError(row, text, msg){
   wireFallback(row, text);
 }
 
-function showRecording(row, text, mr, secs, msg){
+function showRecording(row, text, mr, secs, msg, meter){
   var fb = row.querySelector(".sent-fb");
   if(!fb) return;
+  var canMeter = !!(meter && meter.supported);
   fb.hidden = false;
   fb.innerHTML = (msg ? '<p class="warn">' + esc(msg) + "</p>" : "") +
     '<p class="note">🎙 녹음 중이에요. 다 읽었으면 버튼을 눌러 주세요.</p>' +
+    (canMeter ? '<div class="lvl"><i></i></div><p class="lvl-cap">막대가 움직이면 마이크가 켜진 거예요. 소리가 클수록 길어져요.</p>' : "") +
     '<div class="record-wrap"><button class="mini rec-stop">■ 녹음 중…</button>' +
     '<button class="mini self-ok">✓ 잘 읽었어요</button></div>';
+  if(canMeter){
+    meter.sink = function(v){
+      var bar = fb.querySelector(".lvl i");
+      if(!bar) return;
+      bar.style.width = Math.round(anClamp(v / AN_METER_FULL, 0, 1) * 100) + "%";
+    };
+  }
   var stopBtn = fb.querySelector(".rec-stop");
   var left = secs;
   if(stopBtn){
@@ -1684,6 +2129,32 @@ function wireRecordResult(row, text){
     ok.textContent = "✓ 확인 완료";
     ok.disabled = true;
   });
+  /* ▶ 내 목소리 듣기 — 위 플레이어를 켜고 끈다 */
+  var play = fb.querySelector(".play-mine");
+  if(play){
+    play.addEventListener("click", function(){
+      var au = fb.querySelector("audio");
+      if(!au) return;
+      try{
+        if(au.paused === false && au.pause){
+          au.pause();
+          play.textContent = "▶ 내 목소리 듣기";
+          return;
+        }
+        var pr = au.play ? au.play() : null;
+        play.textContent = "⏸ 듣는 중…";
+        if(pr && typeof pr["catch"] === "function"){
+          pr["catch"](function(){ play.textContent = "▶ 내 목소리 듣기"; });
+        }
+        if(typeof au.onended !== "undefined" && au){
+          au.onended = function(){ play.textContent = "▶ 내 목소리 듣기"; };
+        }
+      }catch(e){
+        play.textContent = "▶ 내 목소리 듣기";
+        toast("위 플레이어의 ▶ 버튼을 눌러 주세요.");
+      }
+    });
+  }
 }
 
 function startRecording(row, text, opts){
@@ -1720,28 +2191,36 @@ function startRecording(row, text, opts){
     }
     var mime = "";
     try{ mime = mr.mimeType || ""; }catch(e){}
+    /* 녹음 중 실시간 음량 미터 (AudioContext 없는 브라우저에서는 그냥 생략) */
+    var meter = null;
+    try{ meter = startLevelMeter(stream); }catch(e){ meter = null; }
+    try{ mr.__meter = meter; }catch(e){}
+    function stopMeter(){ try{ if(meter) meter.stop(); }catch(e){} }
+    var startedAt = Date.now();
     mr.ondataavailable = function(ev){ if(ev.data && ev.data.size) chunks.push(ev.data); };
     mr.onstop = function(){
+      stopMeter();
       stopTracks(stream);
       if(activeRec === mr) activeRec = null;
       try{ if(mr.__iv) clearInterval(mr.__iv); }catch(e){}
       if(mr.__discard) return;                /* 다른 동작으로 정리된 녹음은 버림 */
       var type = (chunks.length && chunks[0].type) ? chunks[0].type : (mime || "audio/mp4");
+      var blob = null;
+      try{ blob = new Blob(chunks, {type: type}); }catch(e){ blob = null; }
       var url = "";
-      try{ url = URL.createObjectURL(new Blob(chunks, {type: type})); }catch(e){}
+      try{ url = URL.createObjectURL(blob); }catch(e){}
+      var secs = Math.max(0.1, (Date.now() - startedAt) / 1000);
       fb.hidden = false;
-      fb.innerHTML = '<p class="note">내 목소리예요. 원문과 비교해 들어 보세요.</p>' +
-        (url
-          ? '<audio controls playsinline src="' + url + '"></audio>'
-          : '<p class="warn">녹음은 됐지만 이 화면에서는 재생할 수 없어요.</p>') +
-        '<div class="sent-actions" style="margin-top:8px">' +
-          '<button class="mini ghost speak" data-say="' + esc(text) + '">🔊 원문 듣기</button>' +
-          '<button class="mini rec-again">🎙 다시 녹음</button>' +
-          '<button class="mini self-ok">✓ 잘 읽었어요</button>' +
-        "</div>";
-      wireRecordResult(row, text);
+      fb.innerHTML = '<p class="note">🔎 녹음을 분석하고 있어요… (내 목소리도 같이 들어 볼 수 있어요)</p>' +
+        (url ? '<audio controls playsinline preload="metadata" src="' + esc(url) + '"></audio>' : "");
+      analyzeRecordedAudio(blob, text, {levels: (meter ? meter.samples : null), seconds: secs}).then(function(a){
+        showAnalysis(row, text, blob, url, a);
+      })["catch"](function(){
+        showAnalysis(row, text, blob, url, fallbackAnalysis(meter ? meter.samples : null, wordCountOf(text), secs, "error"));
+      });
     };
     mr.onerror = function(){
+      stopMeter();
       stopTracks(stream);
       if(activeRec === mr) activeRec = null;
       showRecordError(row, text, "녹음 중 문제가 생겼어요. 다시 시도해 주세요.");
@@ -1749,12 +2228,15 @@ function startRecording(row, text, opts){
     activeRec = mr;
     try{ mr.start(); }
     catch(err){
+      stopMeter();
       stopTracks(stream);
       if(activeRec === mr) activeRec = null;
       showRecordError(row, text, "녹음을 시작하지 못했어요. " + micHelpLine());
       return;
     }
-    showRecording(row, text, mr, 8, opts.msg || "");
+    /* 문장이 길면 그만큼 더 녹음할 수 있게 (8~30초) */
+    var limit = Math.min(30, Math.max(8, Math.round(wordCountOf(text) * 1.1) + 4));
+    showRecording(row, text, mr, limit, opts.msg || "", meter);
   })["catch"](function(err){
     showRecordError(row, text, micErrMsg(err));
   });
@@ -2725,6 +3207,7 @@ $("#btnSettings").addEventListener("click", function(){
   $("#capTts").textContent = speechOK ? "지원 ✓" : "지원 안 됨";
   $("#capStt").textContent = SRClass ? "지원 ✓" : "지원 안 됨";
   $("#capRec").textContent = recSupported() ? "지원 ✓" : "지원 안 됨";
+  if($("#capAn")) $("#capAn").textContent = audioCtxClass() ? "지원 ✓" : "지원 안 됨";
   var tip = "";
   if(isStandalone()) tip = "홈 화면 앱에서는 마이크·음성 인식이 제한될 수 있어요. 마이크가 안 되면 사파리(Safari)에서 열어 주세요.";
   else if(!recSupported()) tip = "이 브라우저에서는 마이크 녹음이 안 돼요. 아이폰은 사파리(Safari)에서 열어 주세요.";
@@ -2829,6 +3312,35 @@ function runSelfTest(){
   ok("마이크 안내 문구", /사파리/.test(MIC_HELP));
   ok("녹음 mime 감지", typeof pickRecMime === "function" && typeof pickRecMime() === "string");
   ok("녹음 지원 판별", typeof recSupported === "function" && typeof recSupported() === "boolean");
+
+  /* 녹음 음성 분석 */
+  ok("음성 분석 함수 준비", typeof analyzeRecordedAudio === "function" && typeof startLevelMeter === "function" && typeof judgeAudio === "function");
+  ok("목표 단어 수 계산", wordCountOf("This house is for sale.") === 5 && wordCountOf("") === 0);
+  ok("오디오 없으면 점수 0점", judgeAudio({duration:2, speechSec:0, avgRms:0, peakRms:0, words:5}).score === 0);
+  ok("정상 발화 → 높은 점수·적정 속도", (function(){
+    var a = judgeAudio({duration:3.2, speechSec:2.5, avgRms:0.08, peakRms:0.21, words:5, mod:0.42, gapRatio:0.12, frames:[0.1,0.02,0.12,0.03,0.09]});
+    return a.score >= 70 && a.pace === "good" && a.volume === "good" && a.noise === false;
+  })());
+  ok("빠른 발화 판정", (function(){
+    var a = judgeAudio({duration:1.2, speechSec:0.9, avgRms:0.08, peakRms:0.2, words:5, mod:0.4, gapRatio:0.05});
+    return a.pace === "fast" && /빨랐/.test(paceMessage(a.pace, a.words));
+  })());
+  ok("느린 발화 판정", judgeAudio({duration:8, speechSec:6, avgRms:0.06, peakRms:0.2, words:5, mod:0.4}).pace === "slow");
+  ok("조용한 목소리 안내", volumeMessage(judgeAudio({duration:3, speechSec:2.5, avgRms:0.02, peakRms:0.1, words:5, mod:0.4}).volume) === "조금 더 크게 말해보세요.");
+  ok("소음 판정", judgeAudio({duration:3, speechSec:3, avgRms:0.02, peakRms:0.021, words:5, mod:0.01, gapRatio:0}).noise === true);
+  ok("리듬 막대 20개", (function(){
+    var f = [], i;
+    for(i=0;i<220;i++) f.push(i % 22 < 11 ? 0.12 : 0.0005);
+    var b = barsFrom(f, AN_BARS);
+    return b.length === 20 && Math.max.apply(null, b) === 1;
+  })());
+  ok("저장 파일 확장자", extForMime("audio/mp4") === ".m4a" && extForMime("audio/webm;codecs=opus") === ".webm");
+  ok("분석 폴백(음량 샘플)", (function(){
+    var lv = [], i;
+    for(i=0;i<30;i++) lv.push(i > 5 && i < 24 ? 0.06 : 0.001);
+    var a = fallbackAnalysis(lv, 5, 3.0, "selftest");
+    return a.source === "levels" && typeof a.score === "number" && a.rhythm.length === 20 && a.unknown !== true;
+  })());
   ok("음성 설정 저장값", db.voice.accent === "en-GB" || db.voice.accent === "en-US");
   ok("localStorage 저장 가능", (function(){ try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); return true; }catch(e){ return false; } })());
 
