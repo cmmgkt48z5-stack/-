@@ -1650,7 +1650,7 @@ function judgeAudio(st){
   var noise = !noSound && mod > 0 && mod < AN_MOD_NOISE;
   var volume = "silent", pace = "none", secPerWord = 0;
   if(!noSound){
-    var loud = Math.max(avg, peak * 0.3);
+    var loud = Math.max(avg, peak * 0.2);
     volume = loud >= AN_VOL_GOOD ? "good" : (loud >= AN_VOL_LOW ? "low" : "silent");
     if(words){
       secPerWord = speech / words;
@@ -1663,7 +1663,7 @@ function judgeAudio(st){
   if(!noSound){
     var need = words ? words * AN_PACE_MIN : 0.5;
     var sSpeech = 30 * anClamp(speech / Math.max(0.5, need), 0, 1);
-    var sVol = volume === "good" ? 25 : (volume === "low" ? 25 * anClamp(Math.max(avg, peak * 0.3) / AN_VOL_GOOD, 0, 1) : 0);
+    var sVol = volume === "good" ? 25 : (volume === "low" ? 25 * anClamp(Math.max(avg, peak * 0.2) / AN_VOL_GOOD, 0, 1) : 0);
     var sPace = 18;
     if(words){
       if(pace === "fast") sPace = 25 * anClamp(secPerWord / AN_PACE_MIN, 0.15, 1);
