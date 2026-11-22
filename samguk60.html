@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#f7f4ee">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>퍼킨스 삼국유사·삼국사기 60권 읽음 체크</title>
+<style>
+  :root{
+    --bg:#f7f4ee;
+    --card:#ffffff;
+    --ink:#232323;
+    --ink-2:#6b6760;
+    --ink-3:#9c968c;
+    --line:#e6e0d4;
+    --accent:#b4492f;
+    --accent-soft:#f6e6df;
+    --done:#3f7d58;
+    --done-soft:#e4f0e8;
+    --shadow:0 1px 2px rgba(60,50,35,.06), 0 6px 18px rgba(60,50,35,.05);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Malgun Gothic",sans-serif;
+    font-size:16px;
+    line-height:1.45;
+    -webkit-text-size-adjust:100%;
+    padding-bottom:calc(24px + var(--safe-b));
+  }
+  .wrap{max-width:620px; margin:0 auto;}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky; top:0; z-index:30;
+    background:rgba(247,244,238,.94);
+    -webkit-backdrop-filter:saturate(180%) blur(12px);
+    backdrop-filter:saturate(180%) blur(12px);
+    border-bottom:1px solid var(--line);
+    padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
+  }
+  .titleRow{display:flex; align-items:flex-start; gap:10px;}
+  .titleRow h1{
+    font-size:16px; font-weight:700; margin:0; letter-spacing:-.2px; flex:1;
+  }
+  .titleRow .sub{
+    display:block; font-size:11.5px; font-weight:500; color:var(--ink-3); margin-top:3px; letter-spacing:0;
+  }
+  .menuBtn{
+    flex:none; border:1px solid var(--line); background:var(--card); color:var(--ink-2);
+    font-size:12px; font-weight:600; padding:7px 10px; border-radius:999px;
+  }
+  .progress{margin-top:10px;}
+  .progressTop{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
+  .count{font-size:13px; color:var(--ink-2); font-variant-numeric:tabular-nums;}
+  .count b{font-size:19px; color:var(--ink); font-weight:700; letter-spacing:-.3px;}
+  .pct{font-size:13px; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums;}
+  .bar{height:8px; border-radius:99px; background:#e9e3d7; overflow:hidden; margin-top:7px;}
+  .bar > i{
+    display:block; height:100%; width:0%; border-radius:99px;
+    background:linear-gradient(90deg,#c85c3c,#a8402a);
+    transition:width .28s ease;
+  }
+
+  /* ---------- filters ---------- */
+  .searchRow{margin-top:10px; display:flex; gap:8px; align-items:center;}
+  .searchBox{position:relative; flex:1;}
+  .searchBox input{
+    width:100%; height:38px; border-radius:11px; border:1px solid var(--line);
+    background:var(--card); padding:0 32px 0 32px; font-size:15px; color:var(--ink);
+    font-family:inherit; outline:none;
+  }
+  .searchBox input::placeholder{color:var(--ink-3);}
+  .searchBox .ico{position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:13px; color:var(--ink-3);}
+  .searchBox .clr{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    width:26px; height:26px; border:0; background:transparent; color:var(--ink-3); font-size:15px; display:none;
+  }
+  .searchBox.has .clr{display:block;}
+
+  .chips{
+    display:flex; gap:6px; overflow-x:auto; padding:9px 0 2px; margin:0 -16px; padding-left:16px; padding-right:16px;
+    scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  .chips::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:none; border:1px solid var(--line); background:var(--card); color:var(--ink-2);
+    font-family:inherit; font-size:13px; font-weight:600; padding:7px 12px; border-radius:999px;
+    white-space:nowrap;
+  }
+  .chip .n{font-weight:500; color:var(--ink-3); font-size:11.5px; margin-left:3px;}
+  .chip.on{background:var(--ink); border-color:var(--ink); color:#fff;}
+  .chip.on .n{color:rgba(255,255,255,.66);}
+
+  .statusRow{display:flex; gap:6px; margin-top:2px; padding-top:7px; border-top:1px dashed var(--line);}
+  .seg{flex:1; display:flex; gap:4px;}
+  .seg button{
+    flex:1; border:1px solid var(--line); background:var(--card); color:var(--ink-2);
+    font-family:inherit; font-size:13px; font-weight:600; padding:7px 0; border-radius:9px;
+  }
+  .seg button.on{background:var(--accent-soft); border-color:#e2c3b6; color:#8f351f;}
+
+  /* ---------- list ---------- */
+  main{padding:12px 12px 0;}
+  .groupHead{
+    display:flex; align-items:center; gap:8px; margin:14px 4px 7px;
+    font-size:12px; font-weight:700; color:var(--ink-2); letter-spacing:.2px;
+  }
+  .groupHead:first-child{margin-top:2px;}
+  .groupHead .rule{flex:1; height:1px; background:var(--line);}
+  .groupHead .cnt{color:var(--ink-3); font-weight:600; font-variant-numeric:tabular-nums;}
+
+  ul.list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px;}
+  li.item{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    box-shadow:var(--shadow); display:flex; align-items:stretch; overflow:hidden;
+  }
+  li.item.read{background:#fdfcf9; border-color:#dfe8e1;}
+  .tick{
+    flex:none; width:56px; border:0; background:transparent; display:flex; align-items:center; justify-content:center;
+    padding:0; font-family:inherit;
+  }
+  .tick span{
+    width:26px; height:26px; border-radius:50%; border:2px solid #d8d2c5; background:#fff;
+    display:flex; align-items:center; justify-content:center; color:transparent; font-size:15px; font-weight:700;
+    transition:all .16s ease;
+  }
+  li.item.read .tick span{background:var(--done); border-color:var(--done); color:#fff;}
+  .body{
+    flex:1; min-width:0; padding:11px 12px 11px 0; text-align:left; border:0; background:transparent;
+    font-family:inherit; color:inherit; display:block;
+  }
+  .line1{display:flex; align-items:center; gap:7px;}
+  .num{
+    flex:none; font-size:11px; font-weight:700; color:var(--ink-3); font-variant-numeric:tabular-nums;
+    background:#f2eee5; border-radius:6px; padding:2px 5px; min-width:24px; text-align:center;
+  }
+  li.item.read .num{background:var(--done-soft); color:#2f6144;}
+  .name{font-size:16px; font-weight:600; letter-spacing:-.2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  li.item.read .name{color:#3d3a34;}
+  .line2{margin-top:3px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .era{font-size:11.5px; font-weight:600; color:var(--ink-3);}
+  .dot{color:#d8d2c5; font-size:9px;}
+  .date{font-size:11.5px; color:var(--ink-2); font-variant-numeric:tabular-nums;}
+  .memoFlag{font-size:11px; color:var(--accent); font-weight:600;}
+  .memo{
+    margin-top:5px; font-size:12.5px; color:var(--ink-2); line-height:1.4;
+    background:#faf8f3; border-left:2px solid #eadfd3; border-radius:0 6px 6px 0; padding:5px 8px;
+    white-space:pre-wrap; word-break:break-word;
+  }
+  .empty{text-align:center; color:var(--ink-3); font-size:14px; padding:40px 20px;}
+  .hint{
+    text-align:center; font-size:11.5px; color:var(--ink-3); padding:18px 24px 6px; line-height:1.6;
+  }
+
+  /* ---------- sheet ---------- */
+  .backdrop{
+    position:fixed; inset:0; background:rgba(30,26,20,.42); z-index:60;
+    opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .backdrop.on{opacity:1; pointer-events:auto;}
+  .sheet{
+    position:fixed; left:0; right:0; bottom:0; z-index:70;
+    background:#fff; border-radius:20px 20px 0 0; transform:translateY(102%);
+    transition:transform .26s cubic-bezier(.3,.8,.3,1);
+    padding:8px 16px calc(18px + var(--safe-b)); max-height:88vh; overflow:auto;
+    box-shadow:0 -8px 40px rgba(40,30,15,.18);
+  }
+  .sheet.on{transform:translateY(0);}
+  .grab{width:38px; height:4px; border-radius:99px; background:#ddd6c8; margin:4px auto 12px;}
+  .sheet h2{font-size:17px; margin:0 0 2px; letter-spacing:-.3px;}
+  .sheet .era2{font-size:12.5px; color:var(--ink-3); font-weight:600;}
+  .sheet .readRow{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:16px 0 4px;}
+  .sheet .readRow .lab{font-size:14px; font-weight:600;}
+  .switch{
+    position:relative; width:52px; height:31px; border-radius:99px; background:#ded8cb;
+    border:0; padding:0; transition:background .18s ease;
+  }
+  .switch::after{
+    content:""; position:absolute; top:3px; left:3px; width:25px; height:25px; border-radius:50%;
+    background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .18s ease;
+  }
+  .switch.on{background:var(--done);}
+  .switch.on::after{transform:translateX(21px);}
+  .field{margin-top:14px;}
+  .field label{display:block; font-size:12px; font-weight:700; color:var(--ink-2); margin-bottom:6px;}
+  .field input[type=date], .field textarea, .field input[type=text]{
+    width:100%; font-family:inherit; font-size:16px; color:var(--ink);
+    border:1px solid var(--line); border-radius:11px; padding:10px 12px; background:#fdfcf9; outline:none;
+  }
+  .field textarea{min-height:84px; resize:vertical; line-height:1.5;}
+  .quickRow{display:flex; gap:6px; margin-top:7px;}
+  .quickRow button{
+    border:1px solid var(--line); background:#fff; color:var(--ink-2); font-family:inherit;
+    font-size:12px; font-weight:600; padding:6px 10px; border-radius:999px;
+  }
+  .sheetActions{display:flex; gap:8px; margin-top:18px;}
+  .btn{
+    flex:1; border:1px solid var(--line); background:#fff; color:var(--ink);
+    font-family:inherit; font-size:15px; font-weight:700; padding:13px 0; border-radius:12px;
+  }
+  .btn.primary{background:var(--ink); border-color:var(--ink); color:#fff;}
+  .btn.danger{color:#a33a26; border-color:#e8cfc6; background:#fdf6f3;}
+
+  /* ---------- settings sheet ---------- */
+  .setRow{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:13px 0; border-bottom:1px solid var(--line);
+  }
+  .setRow:last-of-type{border-bottom:0;}
+  .setRow .t{font-size:14.5px; font-weight:600;}
+  .setRow .d{font-size:11.5px; color:var(--ink-3); margin-top:2px; line-height:1.4;}
+  .setRow button{
+    flex:none; border:1px solid var(--line); background:#fff; color:var(--ink);
+    font-family:inherit; font-size:13px; font-weight:700; padding:9px 13px; border-radius:10px;
+  }
+  .setRow button.danger{color:#a33a26; border-color:#e8cfc6; background:#fdf6f3;}
+  .toast{
+    position:fixed; left:50%; bottom:calc(28px + var(--safe-b)); transform:translate(-50%,14px);
+    background:rgba(35,32,26,.94); color:#fff; font-size:13.5px; font-weight:600;
+    padding:10px 16px; border-radius:11px; z-index:90; opacity:0; pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease; max-width:86vw; text-align:center;
+  }
+  .toast.on{opacity:1; transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="titleRow">
+      <h1>퍼킨스 삼국유사·삼국사기
+        <span class="sub">NEW 퍼킨스 어린이 삼국유사 삼국사기 · 전 60권 읽음 체크</span>
+      </h1>
+      <button class="menuBtn" id="menuBtn" type="button">저장·설정</button>
+    </div>
+
+    <div class="progress">
+      <div class="progressTop">
+        <div class="count"><b id="readN">0</b> / 60권 읽음</div>
+        <div class="pct" id="pct">0%</div>
+      </div>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+
+    <div class="searchRow">
+      <div class="searchBox" id="searchBox">
+        <span class="ico">🔍</span>
+        <input id="q" type="search" inputmode="search" enterkeyhint="search" placeholder="제목·인물 이름으로 찾기" autocomplete="off">
+        <button class="clr" id="clr" type="button" aria-label="지우기">✕</button>
+      </div>
+    </div>
+
+    <div class="chips" id="eraChips"></div>
+
+    <div class="statusRow">
+      <div class="seg" id="statusSeg">
+        <button type="button" data-s="all" class="on">전체</button>
+        <button type="button" data-s="todo">미독</button>
+        <button type="button" data-s="done">완독</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="listHost"></div>
+    <p class="hint">
+      동그라미를 누르면 읽음 표시(오늘 날짜 자동 입력), 책 줄을 누르면 날짜·메모를 고칠 수 있어요.<br>
+      바뀐 내용은 이 기기에 자동 저장됩니다. 다른 기기로 옮길 때는 ‘저장·설정’의 백업 파일을 쓰세요.
+    </p>
+  </main>
+</div>
+
+<!-- detail sheet -->
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="grab"></div>
+  <span class="era2" id="sheetEra">—</span>
+  <h2 id="sheetTitle">—</h2>
+
+  <div class="readRow">
+    <div class="lab">읽음 확인</div>
+    <button class="switch" id="sheetSwitch" type="button" role="switch" aria-checked="false" aria-label="읽음 확인"></button>
+  </div>
+
+  <div class="field">
+    <label for="sheetDate">읽은 날짜</label>
+    <input type="date" id="sheetDate">
+    <div class="quickRow">
+      <button type="button" data-q="today">오늘</button>
+      <button type="button" data-q="yesterday">어제</button>
+      <button type="button" data-q="clear">날짜 지우기</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="sheetMemo">메모</label>
+    <textarea id="sheetMemo" placeholder="재미있었던 장면, 어려운 낱말, 다음에 다시 볼 부분…"></textarea>
+  </div>
+
+  <div class="sheetActions">
+    <button class="btn" id="sheetPrev" type="button">◀ 이전 권</button>
+    <button class="btn primary" id="sheetDone" type="button">완료</button>
+  </div>
+</div>
+
+<!-- settings sheet -->
+<div class="sheet" id="setSheet" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="grab"></div>
+  <h2 id="setTitle">저장·설정</h2>
+  <p class="d" style="font-size:12px;color:var(--ink-3);margin:6px 0 4px;">
+    읽음 표시는 이 브라우저에 저장됩니다(localStorage · perkins_samguk60_v1).
+  </p>
+
+  <div class="setRow">
+    <div>
+      <div class="t">백업 파일로 저장</div>
+      <div class="d">읽음 표시·날짜·메모를 JSON 파일로 내려받아요.</div>
+    </div>
+    <button id="exportBtn" type="button">내보내기</button>
+  </div>
+
+  <div class="setRow">
+    <div>
+      <div class="t">백업 파일 불러오기</div>
+      <div class="d">내보낸 JSON 파일을 그대로 복원해요. 지금 상태를 덮어씁니다.</div>
+    </div>
+    <button id="importBtn" type="button">불러오기</button>
+  </div>
+
+  <div class="setRow">
+    <div>
+      <div class="t">복사용 텍스트</div>
+      <div class="d">60권 전체를 ‘읽음/미독’ 표시와 함께 글로 복사해요.</div>
+    </div>
+    <button id="copyBtn" type="button">목록 복사</button>
+  </div>
+
+  <div class="setRow">
+    <div>
+      <div class="t">전체 초기화</div>
+      <div class="d">모든 읽음 표시·날짜·메모를 지워요. 되돌릴 수 없어요.</div>
+    </div>
+    <button id="resetBtn" class="danger" type="button">초기화</button>
+  </div>
+
+  <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+
+  <div class="sheetActions">
+    <button class="btn primary" id="setClose" type="button">닫기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var KEY = "perkins_samguk60_v1";
+
+  /* 60권 목록 — 출처: G마켓 상품 3869689445 상세 ‘구성 안내’ 표(총 60권) + 권별 표지 */
+  var BOOKS = [
+    [1,"단군왕검","고조선"],
+    [2,"주몽","고구려"],
+    [3,"유리왕자","고구려"],
+    [4,"호동과 낙랑","고구려"],
+    [5,"을파소","고구려"],
+    [6,"아도화상","고구려"],
+    [7,"동천왕","고구려"],
+    [8,"미천왕","고구려"],
+    [9,"광개토대왕","고구려"],
+    [10,"안장왕","고구려"],
+    [11,"바보온달","고구려"],
+    [12,"을지문덕","고구려"],
+    [13,"연개소문","고구려"],
+    [14,"온조왕","백제"],
+    [15,"개로왕","백제"],
+    [16,"도미부부의 사랑","백제"],
+    [17,"무령왕","백제"],
+    [18,"혜현스님","백제"],
+    [19,"무왕","백제"],
+    [20,"의자왕","백제"],
+    [21,"계백","백제"],
+    [22,"흑치상지","백제"],
+    [23,"김수로","가야"],
+    [24,"박혁거세","신라"],
+    [25,"석탈해","신라"],
+    [26,"김알지","신라"],
+    [27,"연오랑과 세오녀","신라"],
+    [28,"박제상","신라"],
+    [29,"이차돈","신라"],
+    [30,"진흥왕","신라"],
+    [31,"이사부","신라"],
+    [32,"사다함","신라"],
+    [33,"원광법사","신라"],
+    [34,"선덕여왕","신라"],
+    [35,"문희","신라"],
+    [36,"자장율사","신라"],
+    [37,"화랑관창","신라"],
+    [38,"김유신","신라"],
+    [39,"원효대사","신라"],
+    [40,"의상대사","신라"],
+    [41,"강수","신라"],
+    [42,"원술","신라"],
+    [43,"문무왕","통일신라"],
+    [44,"광덕과 엄장","통일신라"],
+    [45,"설총","통일신라"],
+    [46,"신문왕","통일신라"],
+    [47,"솔거","통일신라"],
+    [48,"김생","통일신라"],
+    [49,"수로부인","통일신라"],
+    [50,"월명스님","통일신라"],
+    [51,"김대성","통일신라"],
+    [52,"손순","통일신라"],
+    [53,"장보고","통일신라"],
+    [54,"최치원","통일신라"],
+    [55,"처용","통일신라"],
+    [56,"노힐부득과 달달박박","통일신라"],
+    [57,"선율","통일신라"],
+    [58,"견훤","후삼국"],
+    [59,"궁예","후삼국"],
+    [60,"왕건","후삼국"]
+  ];
+
+  var ERAS = ["전체","고조선","고구려","백제","가야","신라","통일신라","후삼국"];
+
+  var state = {
+    read: {},   // "12": {read:true, date:"2026-11-22", memo:"..."}
+    filterEra: "전체",
+    filterStatus: "all",
+    q: ""
+  };
+
+  /* ---------- storage ---------- */
+  function load(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if(!raw) return;
+      var d = JSON.parse(raw);
+      if(d && typeof d === "object"){
+        if(d.read && typeof d.read === "object") state.read = d.read;
+        if(typeof d.filterEra === "string" && ERAS.indexOf(d.filterEra) >= 0) state.filterEra = d.filterEra;
+        if(d.filterStatus === "todo" || d.filterStatus === "done" || d.filterStatus === "all") state.filterStatus = d.filterStatus;
+      }
+    }catch(e){ /* 저장값이 깨져 있으면 새로 시작 */ }
+  }
+  function save(){
+    try{
+      localStorage.setItem(KEY, JSON.stringify({
+        v:1,
+        updatedAt: new Date().toISOString(),
+        read: state.read,
+        filterEra: state.filterEra,
+        filterStatus: state.filterStatus
+      }));
+    }catch(e){
+      toast("저장 공간을 쓸 수 없어요 (사생활 보호 모드일 수 있어요)");
+    }
+  }
+
+  function rec(n){
+    var k = String(n);
+    if(!state.read[k]) state.read[k] = {read:false, date:"", memo:""};
+    var r = state.read[k];
+    if(typeof r.read !== "boolean") r.read = !!r.date;
+    if(typeof r.date !== "string") r.date = "";
+    if(typeof r.memo !== "string") r.memo = "";
+    return r;
+  }
+  function isRead(n){ return !!rec(n).read; }
+  function readCount(){
+    var c = 0;
+    for(var i=0;i<BOOKS.length;i++){ if(isRead(BOOKS[i][0])) c++; }
+    return c;
+  }
+
+  function todayStr(){
+    var d = new Date();
+    var m = d.getMonth()+1, day = d.getDate();
+    return d.getFullYear() + "-" + (m<10?"0":"") + m + "-" + (day<10?"0":"") + day;
+  }
+  function yesterdayStr(){
+    var d = new Date();
+    d.setDate(d.getDate()-1);
+    var m = d.getMonth()+1, day = d.getDate();
+    return d.getFullYear() + "-" + (m<10?"0":"") + m + "-" + (day<10?"0":"") + day;
+  }
+  function shortDate(s){
+    if(!s) return "";
+    var p = s.split("-");
+    if(p.length !== 3) return s;
+    return Number(p[0]) + "." + p[1] + "." + p[2];
+  }
+
+  /* ---------- ui refs ---------- */
+  var $ = function(id){ return document.getElementById(id); };
+  var listHost = $("listHost"), barFill = $("barFill"), readN = $("readN"), pctEl = $("pct");
+  var chipHost = $("eraChips"), seg = $("statusSeg"), qInput = $("q"), searchBox = $("searchBox"), clrBtn = $("clr");
+  var backdrop = $("backdrop"), sheet = $("sheet"), setSheet = $("setSheet");
+  var sheetTitle = $("sheetTitle"), sheetEra = $("sheetEra"), sheetSwitch = $("sheetSwitch");
+  var sheetDate = $("sheetDate"), sheetMemo = $("sheetMemo"), sheetPrev = $("sheetPrev"), sheetDone = $("sheetDone");
+  var toastEl = $("toast");
+  var currentN = null;
+  var toastTimer = null;
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("on"); }, 2000);
+  }
+
+  /* ---------- shell ---------- */
+  function paintProgress(){
+    var c = readCount();
+    readN.textContent = c;
+    var p = Math.round(c / 60 * 100);
+    pctEl.textContent = p + "%";
+    barFill.style.width = p + "%";
+  }
+
+  function paintChips(){
+    var html = "";
+    for(var i=0;i<ERAS.length;i++){
+      var e = ERAS[i];
+      var total = 0, done = 0;
+      for(var j=0;j<BOOKS.length;j++){
+        if(e === "전체" || BOOKS[j][2] === e){ total++; if(isRead(BOOKS[j][0])) done++; }
+      }
+      var on = (state.filterEra === e) ? " on" : "";
+      html += '<button type="button" class="chip'+on+'" data-era="'+e+'">'+e+
+              '<span class="n">'+done+'/'+total+'</span></button>';
+    }
+    chipHost.innerHTML = html;
+  }
+
+  function paintSeg(){
+    var btns = seg.querySelectorAll("button");
+    for(var i=0;i<btns.length;i++){
+      btns[i].classList.toggle("on", btns[i].getAttribute("data-s") === state.filterStatus);
+    }
+  }
+
+  function matches(b){
+    var era = b[2], n = b[0], title = b[1];
+    if(state.filterEra !== "전체" && era !== state.filterEra) return false;
+    if(state.filterStatus === "todo" && isRead(n)) return false;
+    if(state.filterStatus === "done" && !isRead(n)) return false;
+    if(state.q){
+      var needle = state.q.replace(/\s+/g, "").toLowerCase();
+      var hay = (String(n) + title + era).replace(/\s+/g, "").toLowerCase();
+      if(hay.indexOf(needle) < 0) return false;
+    }
+    return true;
+  }
+
+  function itemHTML(b){
+    var n = b[0], title = b[1], era = b[2];
+    var r = rec(n);
+    var read = r.read;
+    var dateLine = "";
+    if(read && r.date) dateLine = '<span class="dot">·</span><span class="date">'+shortDate(r.date)+'</span>';
+    var memoFlag = r.memo ? '<span class="memoFlag">메모</span>' : "";
+    var memo = r.memo ? '<div class="memo">'+escapeHTML(r.memo)+'</div>' : "";
+    return '<li class="item'+(read?" read":"")+'" data-n="'+n+'">'+
+      '<button class="tick" type="button" data-act="tick" data-n="'+n+'" aria-label="'+n+'권 읽음 표시" aria-pressed="'+(read?"true":"false")+'"><span>✓</span></button>'+
+      '<button class="body" type="button" data-act="open" data-n="'+n+'">'+
+        '<div class="line1"><span class="num">'+n+'</span><span class="name">'+escapeHTML(title)+'</span></div>'+
+        '<div class="line2"><span class="era">'+escapeHTML(era)+'</span>'+dateLine+memoFlag+'</div>'+
+        memo+
+      '</button></li>';
+  }
+
+  function escapeHTML(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function paintList(){
+    var out = [], group = null, shown = 0;
+    for(var i=0;i<BOOKS.length;i++){
+      var b = BOOKS[i];
+      if(!matches(b)) continue;
+      if(b[2] !== group){
+        group = b[2];
+        var gt = 0, gd = 0;
+        for(var j=0;j<BOOKS.length;j++){
+          if(BOOKS[j][2] === group){ gt++; if(isRead(BOOKS[j][0])) gd++; }
+        }
+        out.push('<div class="groupHead"><span>'+escapeHTML(group)+'</span><span class="rule"></span><span class="cnt">'+gd+'/'+gt+'</span></div>');
+      }
+      out.push(itemHTML(b));
+      shown++;
+    }
+    if(!shown){
+      listHost.innerHTML = '<p class="empty">조건에 맞는 책이 없어요.<br>검색어나 필터를 바꿔 보세요.</p>';
+      return;
+    }
+    // group rows into <ul> blocks by splitting on groupHead
+    var html = "", buf = [];
+    for(var k=0;k<out.length;k++){
+      if(out[k].indexOf('class="groupHead"') > -1){
+        if(buf.length){ html += '<ul class="list">'+buf.join("")+'</ul>'; buf = []; }
+        html += out[k];
+      } else {
+        buf.push(out[k]);
+      }
+    }
+    if(buf.length) html += '<ul class="list">'+buf.join("")+'</ul>';
+    listHost.innerHTML = html;
+  }
+
+  function paintAll(){
+    paintProgress(); paintChips(); paintSeg(); paintList();
+  }
+
+  /* ---------- list interaction ---------- */
+  listHost.addEventListener("click", function(ev){
+    var btn = ev.target.closest ? ev.target.closest("button[data-act]") : null;
+    if(!btn){
+      var li = ev.target.closest ? ev.target.closest("li.item") : null;
+      if(!li) return;
+      openSheet(Number(li.getAttribute("data-n")));
+      return;
+    }
+    var n = Number(btn.getAttribute("data-n"));
+    if(btn.getAttribute("data-act") === "tick"){
+      toggle(n);
+    } else {
+      openSheet(n);
+    }
+  });
+
+  function toggle(n){
+    var r = rec(n);
+    if(r.read){
+      r.read = false;
+      toast(n + "권 · 미독으로 바꿨어요");
+    } else {
+      r.read = true;
+      if(!r.date) r.date = todayStr();
+      toast(n + "권 · 읽음 (" + shortDate(r.date) + ")");
+    }
+    save();
+    paintAll();
+    if(currentN === n) syncSheet(n);
+  }
+
+  /* ---------- detail sheet ---------- */
+  function openSheet(n){
+    currentN = n;
+    syncSheet(n);
+    backdrop.classList.add("on");
+    sheet.classList.add("on");
+    document.body.style.overflow = "hidden";
+  }
+  function closeSheet(){
+    sheet.classList.remove("on");
+    setSheet.classList.remove("on");
+    backdrop.classList.remove("on");
+    document.body.style.overflow = "";
+    if(currentN !== null){
+      var r = rec(currentN);
+      r.memo = sheetMemo.value.trim();
+      save();
+      paintAll();
+    }
+    currentN = null;
+  }
+  function syncSheet(n){
+    var b = null;
+    for(var i=0;i<BOOKS.length;i++){ if(BOOKS[i][0] === n){ b = BOOKS[i]; break; } }
+    if(!b) return;
+    var r = rec(n);
+    sheetEra.textContent = b[2] + " · " + n + "권";
+    sheetTitle.textContent = b[1];
+    sheetSwitch.classList.toggle("on", !!r.read);
+    sheetSwitch.setAttribute("aria-checked", r.read ? "true" : "false");
+    sheetDate.value = r.date || "";
+    sheetMemo.value = r.memo || "";
+    sheetPrev.textContent = n > 1 ? "◀ " + (n-1) + "권" : "◀ 처음";
+    sheetPrev.disabled = (n <= 1);
+    sheetPrev.style.opacity = (n <= 1) ? .4 : 1;
+  }
+
+  sheetSwitch.addEventListener("click", function(){
+    if(currentN === null) return;
+    var r = rec(currentN);
+    if(r.read){
+      r.read = false;
+      toast(currentN + "권 · 미독으로 바꿨어요");
+    } else {
+      r.read = true;
+      if(!r.date) r.date = todayStr();
+      sheetDate.value = r.date;
+      toast(currentN + "권 · 읽음 (" + shortDate(r.date) + ")");
+    }
+    save();
+    syncSheet(currentN);
+    paintAll();
+  });
+
+  sheetDate.addEventListener("change", function(){
+    if(currentN === null) return;
+    var r = rec(currentN);
+    r.date = sheetDate.value || "";
+    if(r.date && !r.read){ r.read = true; }
+    if(!r.date && r.read){ /* 읽음은 유지, 날짜만 비움 */ }
+    save(); syncSheet(currentN); paintAll();
+  });
+
+  var quick = document.querySelectorAll(".quickRow button");
+  for(var qi=0; qi<quick.length; qi++){
+    quick[qi].addEventListener("click", function(){
+      if(currentN === null) return;
+      var q = this.getAttribute("data-q");
+      var r = rec(currentN);
+      if(q === "today"){ r.date = todayStr(); r.read = true; }
+      else if(q === "yesterday"){ r.date = yesterdayStr(); r.read = true; }
+      else { r.date = ""; }
+      save(); syncSheet(currentN); paintAll();
+    });
+  }
+
+  sheetPrev.addEventListener("click", function(){
+    if(currentN === null) return;
+    var r = rec(currentN);
+    r.memo = sheetMemo.value.trim();
+    save();
+    if(currentN > 1){
+      currentN = currentN - 1;
+      syncSheet(currentN);
+      paintAll();
+    }
+  });
+
+  sheetDone.addEventListener("click", function(){
+    if(currentN !== null){
+      var r = rec(currentN);
+      r.memo = sheetMemo.value.trim();
+      save();
+    }
+    paintAll();
+    closeSheet();
+  });
+
+  backdrop.addEventListener("click", closeSheet);
+
+  /* ---------- settings ---------- */
+  function openSettings(){
+    backdrop.classList.add("on");
+    setSheet.classList.add("on");
+    document.body.style.overflow = "hidden";
+  }
+  $("menuBtn").addEventListener("click", openSettings);
+  $("setClose").addEventListener("click", closeSheet);
+
+  $("exportBtn").addEventListener("click", function(){
+    var payload = {
+      app: "perkins_samguk60",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      read: state.read
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "perkins_samguk60_backup_" + todayStr().replace(/-/g,"") + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+    toast("백업 파일을 내려받았어요");
+  });
+
+  $("importBtn").addEventListener("click", function(){ $("fileInput").click(); });
+
+  $("fileInput").addEventListener("change", function(ev){
+    var f = ev.target.files && ev.target.files[0];
+    if(!f) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var d = JSON.parse(String(reader.result));
+        var src = (d && d.read) ? d.read : d;
+        if(!src || typeof src !== "object") throw new Error("bad");
+        var cnt = 0;
+        for(var k in src){
+          if(!Object.prototype.hasOwnProperty.call(src, k)) continue;
+          var v = src[k];
+          if(!v || typeof v !== "object") continue;
+          state.read[k] = {
+            read: !!v.read,
+            date: typeof v.date === "string" ? v.date : "",
+            memo: typeof v.memo === "string" ? v.memo : ""
+          };
+          cnt++;
+        }
+        save(); paintAll();
+        toast("백업에서 " + cnt + "권 정보를 불러왔어요");
+        closeSheet();
+      }catch(e){
+        toast("백업 파일을 읽을 수 없어요");
+      }
+      ev.target.value = "";
+    };
+    reader.readAsText(f);
+  });
+
+  $("copyBtn").addEventListener("click", function(){
+    var lines = ["NEW 퍼킨스 어린이 삼국유사 삼국사기 전 60권 — 읽음 체크 (" + todayStr() + ")", ""];
+    var group = null;
+    for(var i=0;i<BOOKS.length;i++){
+      var b = BOOKS[i];
+      if(b[2] !== group){
+        group = b[2];
+        lines.push("[" + group + "]");
+      }
+      var r = rec(b[0]);
+      var mark = r.read ? "✔" : "☐";
+      var extra = r.read && r.date ? " (" + shortDate(r.date) + ")" : "";
+      lines.push(mark + " " + b[0] + ". " + b[1] + extra);
+    }
+    lines.push("");
+    lines.push("읽음 " + readCount() + "/60권 (" + Math.round(readCount()/60*100) + "%)");
+    var text = lines.join("\n");
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try{ document.execCommand("copy"); toast("목록을 복사했어요 (붙여넣기 하세요)"); }
+      catch(e){ toast("복사가 안 되면 화면을 길게 눌러 선택하세요"); }
+      document.body.removeChild(ta);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ toast("목록을 복사했어요"); }, fallback);
+    } else fallback();
+  });
+
+  $("resetBtn").addEventListener("click", function(){
+    if(!confirm("모든 읽음 표시·날짜·메모를 지웁니다. 되돌릴 수 없어요. 계속할까요?")) return;
+    state.read = {};
+    save(); paintAll(); closeSheet();
+    toast("전체 초기화했어요");
+  });
+
+  /* ---------- filters ---------- */
+  chipHost.addEventListener("click", function(ev){
+    var chip = ev.target.closest ? ev.target.closest("button[data-era]") : null;
+    if(!chip) return;
+    state.filterEra = chip.getAttribute("data-era");
+    save(); paintChips(); paintList();
+  });
+
+  seg.addEventListener("click", function(ev){
+    var b = ev.target.closest ? ev.target.closest("button[data-s]") : null;
+    if(!b) return;
+    state.filterStatus = b.getAttribute("data-s");
+    save(); paintSeg(); paintList();
+  });
+
+  var qTimer = null;
+  qInput.addEventListener("input", function(){
+    searchBox.classList.toggle("has", !!qInput.value);
+    clearTimeout(qTimer);
+    qTimer = setTimeout(function(){
+      state.q = qInput.value.trim();
+      paintList();
+    }, 130);
+  });
+  qInput.addEventListener("search", function(){ state.q = qInput.value.trim(); paintList(); });
+  clrBtn.addEventListener("click", function(){
+    qInput.value = ""; state.q = ""; searchBox.classList.remove("has"); paintList(); qInput.focus();
+  });
+
+  /* ---------- boot ---------- */
+  load();
+  paintAll();
+
+  // 닫혔다 다시 열릴 때(홈 화면 앱) 상태 유지 확인
+  document.addEventListener("visibilitychange", function(){
+    if(document.visibilityState === "visible") paintAll();
+  });
+})();
+</script>
+</body>
+</html>
