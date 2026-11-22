@@ -3367,7 +3367,8 @@ function firstTouchTTS(e){
   loadVoices();
   var t = e && e.target;
   var onSpeakBtn = false;
-  try{ onSpeakBtn = !!(t && t.closest && t.closest("[data-say], .v-speak")); }catch(err){}
+  /* 말하기·마이크 버튼이면 무음 발화를 겁지 않는다(그 발화 자체가 제스처 안에서 엔진을 연다) */
+  try{ onSpeakBtn = !!(t && t.closest && t.closest("[data-say], .v-speak, .mic")); }catch(err){}
   if(onSpeakBtn) ttsUnlocked = true;   /* 그 발화 자체가 사용자 제스처 안에서 엔진을 연다 */
   else unlockTTS();
   document.removeEventListener("touchstart", firstTouchTTS);
