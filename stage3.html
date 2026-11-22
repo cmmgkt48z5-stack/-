@@ -1358,7 +1358,7 @@ $("#list").addEventListener("click", function(e){
     vb.classList.toggle("open");
     return;
   }
-  var doneBtn = e.target.closest(".done-btn");
+  var doneBtn = e.target.closest(".done-btn, .read-toggle");
   if(doneBtn){ e.stopPropagation(); toggleDone(doneBtn.getAttribute("data-done")); return; }
   var star = e.target.closest(".star");
   if(star){ e.stopPropagation(); setStar(star.getAttribute("data-star"), parseInt(star.getAttribute("data-v"),10)); return; }
