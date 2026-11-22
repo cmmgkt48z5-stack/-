@@ -113,8 +113,8 @@ h1,h2,h3,p,ul,ol{margin:0}
 .block-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:16px 0 8px;font-size:12px;font-weight:800;color:#5b6a61;letter-spacing:.02em}
 .block-title .hint{font-weight:500;color:#a09a8c;font-size:11px;letter-spacing:0}
 .vocab{list-style:none;padding:0;display:grid;gap:6px}
-.v-item{background:#f8f4eb;border:1px solid #efe7d8;border-radius:11px;overflow:hidden}
-.v-btn{width:100%;display:flex;align-items:center;gap:8px;background:none;border:0;padding:9px 10px;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.v-item{background:#f8f4eb;border:1px solid #efe7d8;border-radius:11px;overflow:hidden;display:flex;flex-wrap:wrap;align-items:center}
+.v-btn{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:8px;background:none;border:0;padding:9px 4px 9px 10px;text-align:left;cursor:pointer;font:inherit;color:inherit}
 .v-btn b{font-size:14.5px;letter-spacing:0}
 .ipa{font-size:12px;color:#8b8474}
 .pos{font-size:10.5px;background:#e9e0cd;color:#6a6355;border-radius:6px;padding:1px 6px;font-weight:700}
@@ -122,7 +122,7 @@ h1,h2,h3,p,ul,ol{margin:0}
 .v-btn.open .chev{transform:rotate(180deg)}
 .v-speak{flex:0 0 auto;border:1px solid #e0d6c3;background:#fff;border-radius:9px;width:30px;height:30px;font-size:14px;line-height:1;cursor:pointer;margin-left:2px}
 .v-speak:active{transform:scale(.93)}
-.v-more{padding:0 11px 11px;border-top:1px dashed #e6dcc9;margin-top:0}
+.v-more{flex:1 1 100%;padding:0 11px 11px;border-top:1px dashed #e6dcc9;margin-top:0}
 .v-ko{font-size:13.5px;color:#2f2b24;margin-top:8px;font-weight:600}
 .v-ex{font-size:13px;color:#6c6558;margin-top:3px;font-style:italic}
 .v-ex-btn{margin-top:8px;border:1px solid #ded4c0;background:#fffdf8;border-radius:8px;padding:5px 9px;font-size:11.5px;color:#6d6659;cursor:pointer}
@@ -402,7 +402,7 @@ a.mini{display:inline-block;text-decoration:none;line-height:1.55}
     <div class="dock">
       <div class="dock-thin"><i id="miniFill"></i></div>
       <div class="dock-row">
-        <label class="search"><span>🔍</span><input id="q" type="search" placeholder="제목·단어 검색 (scar, 목도리)" autocomplete="off"></label>
+        <label class="search"><span>🔍</span><input id="q" type="search" placeholder="제목·단어 검색 (duck, 오리)" autocomplete="off"></label>
         <span class="count" id="countPill">30</span>
       </div>
       <div class="chips" id="chips"></div>
@@ -1275,7 +1275,7 @@ function cardHTML(b){
   var stars = "";
   for(var s=1;s<=5;s++) stars += '<button class="star' + (st.r >= s ? " on" : "") + '" data-star="' + esc(b.id) + '" data-v="' + s + '" aria-label="별 ' + s + '개">★</button>';
   h += '<div class="rate-row"><span class="rate-label">별점</span><div class="stars">' + stars + "</div></div>";
-  h += '<input class="memo" data-memo="' + esc(b.id) + '" placeholder="한 줄 메모 (예: 목도리 장면이 재밌었어)" value="' + esc(st.m || "") + '">';
+  h += '<input class="memo" data-memo="' + esc(b.id) + '" placeholder="한 줄 메모 (예: 오리들이 다 젖어서 웃겼어)" value="' + esc(st.m || "") + '">';
   h += '<p class="memo-saved"></p>';
   h += '<button class="read-toggle' + (st.d ? " on" : "") + '" data-done="' + esc(b.id) + '">' +
     (st.d ? "✓ 읽음 완료 · 다시 누르면 해제" : "이 책 읽음 완료로 표시") + "</button>";
